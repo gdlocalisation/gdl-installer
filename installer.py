@@ -32,6 +32,7 @@ class Installer:
         self.window.setWindowFlags(
             QtCore.Qt.WindowType.WindowCloseButtonHint | QtCore.Qt.WindowType.WindowMinimizeButtonHint
         )
+        # self.ui.tabs.tabBar().setEnabled(False)
         self.ui.folderpathEdit.setText(steam_finder.SteamFinder(self.app).game_dir)
         self.bind_events()
 
