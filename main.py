@@ -19,7 +19,7 @@ class App:
         self.exec_script = self.spawn_args[-1]
         self.theme = wintheme.get_apps_theme()
         if False:
-            self.theme = wintheme.THEME_LIGHT
+            self.theme = wintheme.THEME_LIGHT  # noqa
         self.logger = Logger(self)
         self.logger.log('GDL Log')
         self.logger.log('CWD', self.cwd)

@@ -3,6 +3,7 @@ import sys
 import time
 import requests
 import wintheme
+import steam_finder
 from PyQt5 import QtCore, QtGui, QtWidgets
 from installer_ui import Ui_MainWindow
 
@@ -21,11 +22,15 @@ class Installer:
             self.set_stylesheet('Ubuntu')
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.MainWindow)
-        self.bind_events()
+        self.after_setup_ui()
         self.MainWindow.show()
         self.json_data = {}
         self.load_json()
         self.exit_code = self.application.exec_()
+
+    def after_setup_ui(self) -> None:
+        self.ui.folderpathEdit.setText(steam_finder.SteamFinder(self.app).game_dir)
+        self.bind_events()
 
     def bind_events(self) -> None:
         self.ui.cancelButton.clicked.connect(lambda: self.app.show_question(
