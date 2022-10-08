@@ -41,7 +41,7 @@ class App:
         box.setIcon(box.Icon.Critical)
         box.setWindowTitle(caption)
         box.setText(text)
-        box.addButton('OK', box.ActionRole).clicked.connect(cb)
+        box.addButton('  OK  ', box.ActionRole).clicked.connect(cb)
         box.show()
         return box
 
@@ -54,8 +54,8 @@ class App:
         box.setIcon(box.Icon.Question)
         box.setWindowTitle(caption)
         box.setText(text)
-        box.addButton('Да', box.ActionRole).clicked.connect(yes_cb)
-        box.addButton('Нет', box.ActionRole).clicked.connect(no_cb or box.hide)
+        box.addButton('  Да  ', box.ActionRole).clicked.connect(yes_cb)
+        box.addButton('  Нет ', box.ActionRole).clicked.connect(no_cb or box.hide)
         box.show()
         return box
 
