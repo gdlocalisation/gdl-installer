@@ -15,7 +15,7 @@ class Installer:
         self.application = QtWidgets.QApplication(sys.argv)
         self.window = QtWidgets.QMainWindow()
         self.hwnd = int(self.window.winId())
-        if self.app.theme == wintheme.THEME_DARK:
+        if self.app.theme & wintheme.THEME_DARK:
             wintheme.set_window_theme(self.hwnd, wintheme.THEME_DARK)
             self.set_stylesheet('Darkeum')
         else:
