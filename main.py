@@ -18,6 +18,8 @@ class App:
         self.spawn_args = [sys.executable] if self.is_compiled else [sys.executable, __file__]
         self.exec_script = self.spawn_args[-1]
         self.theme = wintheme.get_apps_theme()
+        if False:
+            self.theme = wintheme.THEME_LIGHT
         self.logger = Logger(self)
         self.logger.log('GDL Log')
         self.logger.log('CWD', self.cwd)
@@ -34,7 +36,7 @@ class App:
 
     def show_error(self, window: any, caption: str, text: str, cb: any) -> QtWidgets.QMessageBox:  # noqa
         box = QtWidgets.QMessageBox(window)
-        if self.theme & wintheme.THEME_DARK:
+        if self.theme == wintheme.THEME_DARK:
             wintheme.set_window_theme(int(box.winId()), wintheme.THEME_DARK)
         box.setIcon(box.Icon.Critical)
         box.setWindowTitle(caption)
@@ -47,7 +49,7 @@ class App:
             self, window: any, caption: str, text: str, yes_cb: any, no_cb: any = None
     ) -> QtWidgets.QMessageBox:  # noqa
         box = QtWidgets.QMessageBox(window)
-        if self.theme & wintheme.THEME_DARK:
+        if self.theme == wintheme.THEME_DARK:
             wintheme.set_window_theme(int(box.winId()), wintheme.THEME_DARK)
         box.setIcon(box.Icon.Question)
         box.setWindowTitle(caption)
