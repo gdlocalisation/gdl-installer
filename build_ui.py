@@ -11,13 +11,12 @@ def main() -> None:
         if not f_ext == 'ui':
             continue
         fp = os.path.join(cwd, fn)
-        out_fp = os.path.join(cwd, 'files', fn[:-len(f_ext) - 1] + '.py')
+        out_fp = os.path.join(cwd, fn[:-len(f_ext) - 1] + '_ui.py')
         subprocess.call([
             'pyuic5',
             fp,
             '-o',
-            out_fp,
-            '-x'  # TODO: remove later
+            out_fp
         ])
 
 

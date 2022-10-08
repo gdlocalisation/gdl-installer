@@ -1,4 +1,3 @@
 .idea
 __pycache__
-files/__pycache__
-files/*.py
+*_ui.py

@@ -4,7 +4,7 @@ import time
 import requests
 import wintheme
 from PyQt5 import QtCore, QtGui, QtWidgets
-from files.installer import Ui_MainWindow
+from installer_ui import Ui_MainWindow
 
 
 class Installer:
