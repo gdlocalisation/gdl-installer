@@ -1,0 +1,4 @@
+.idea
+__pycache__
+files/__pycache__
+files/*.py
