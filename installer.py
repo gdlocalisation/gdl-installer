@@ -13,28 +13,31 @@ class Installer:
         self.app = app
         self.logger = self.app.logger
         self.application = QtWidgets.QApplication(sys.argv)
-        self.MainWindow = QtWidgets.QMainWindow()
-        self.hwnd = int(self.MainWindow.winId())
+        self.window = QtWidgets.QMainWindow()
+        self.hwnd = int(self.window.winId())
         if self.app.theme == wintheme.THEME_DARK:
             wintheme.set_window_theme(self.hwnd, wintheme.THEME_DARK)
             self.set_stylesheet('Darkeum')
         else:
             self.set_stylesheet('Ubuntu')
         self.ui = Ui_MainWindow()
-        self.ui.setupUi(self.MainWindow)
+        self.ui.setupUi(self.window)
         self.after_setup_ui()
-        self.MainWindow.show()
+        self.window.show()
         self.json_data = {}
         self.load_json()
         self.exit_code = self.application.exec_()
 
     def after_setup_ui(self) -> None:
+        self.window.setWindowFlags(
+            QtCore.Qt.WindowType.WindowCloseButtonHint | QtCore.Qt.WindowType.WindowMinimizeButtonHint
+        )
         self.ui.folderpathEdit.setText(steam_finder.SteamFinder(self.app).game_dir)
         self.bind_events()
 
     def bind_events(self) -> None:
         self.ui.cancelButton.clicked.connect(lambda: self.app.show_question(
-            self.MainWindow, 'Выход из установки', 'Вы уверены, что хотите выйти?', self.MainWindow.close
+            self.window, 'Выход из установки', 'Вы уверены, что хотите выйти?', self.window.close
         ))
 
     def load_json(self) -> None:
@@ -47,7 +50,7 @@ class Installer:
         except Exception as err:
             self.logger.error('Failed to download JSON', err)
             return self.app.show_error(
-                self.MainWindow,
+                self.window,
                 'Ошибка!',
                 'Не удалось скачать информацию.\nПовторите попытку позже.',
                 lambda: sys.exit(1)
@@ -60,4 +63,4 @@ class Installer:
         f = open(os.path.join(self.app.files_dir, style_name + '.qss'), 'r', encoding=self.app.encoding)
         content = f.read()
         f.close()
-        self.MainWindow.setStyleSheet(content)
+        self.window.setStyleSheet(content)
