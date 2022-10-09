@@ -4,7 +4,7 @@ import time
 import requests
 import wintheme
 import finder
-import downloader
+import threader
 from PyQt5 import QtCore, QtGui, QtWidgets
 from installer_ui import Ui_MainWindow
 
@@ -54,8 +54,12 @@ class Installer:
         self.ui.loaderType.changeEvent = self.check_radio_buttons
         self.logger.log('Events bound')
 
-    def tab_changed(self) -> None:
-        tab_id = self.ui.tabs.currentIndex()
+    def tab_changed(self, to_change: int = -1) -> None:
+        if to_change >= 0:
+            self.ui.tabs.setCurrentIndex(to_change)
+            tab_id = to_change
+        else:
+            tab_id = self.ui.tabs.currentIndex()
         self.logger.log('Tab id', tab_id)
         if tab_id == 0:
             self.ui.goBackButton.setEnabled(False)
@@ -88,7 +92,7 @@ class Installer:
             self.ui.downloadBar.setMaximum(self.json_data['size'])
             self.logger.log('Installing to', self.install_path)
             self.window.download_thread = thread = QtCore.QThread()
-            self.window.data_downloader = loader = downloader.Downloader()
+            self.window.data_downloader = loader = threader.Downloader()
             loader.url = 'https://github.com/gdlocalisation/gdl-binaries/releases/latest/download/gdl-binaries.bin.gzip'
             loader.encoding = self.app.encoding
             loader.chunk_size = 1024 * 32 if self.app.is_compiled else 1024 * 32
@@ -102,14 +106,21 @@ class Installer:
             self.data += chunk
             self.ui.downloadBar.setValue(len(self.data))
             return
-        self.ui.cancelButton.setEnabled(True)
         self.window.download_thread.quit()  # noqa
         self.window.data_downloader.deleteLater()  # noqa
         self.window.download_thread.deleteLater()  # noqa
         del self.window.download_thread # noqa
         del self.window.data_downloader # noqa
         if status == 1:
+            self.logger.log('Bin downloaded')
             return
+        self.logger.error('Failed to download bin', chunk.decode(self.app.encoding))
+        self.app.show_error(
+            self.window,
+            'Ошибка',
+            'Не удалось скачать архив.\nПовторите попытку позже.',
+            lambda: self.tab_changed(2)
+        )
 
     def go_forward(self) -> None:
         if self.ui.tabs.currentIndex() == 2:
