@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import zlib
 import requests
 import wintheme
 import finder
@@ -23,7 +24,6 @@ class Installer:
             self.set_stylesheet('Ubuntu')
         self.install_game_path = ''
         self.install_path = ''
-        self.data = b''
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.window)
         self.after_setup_ui()
@@ -93,6 +93,7 @@ class Installer:
             self.logger.log('Installing to', self.install_path)
             self.window.download_thread = thread = QtCore.QThread()
             self.window.data_downloader = loader = threader.Downloader()
+            self.window.binary_data = b''
             loader.url = 'https://github.com/gdlocalisation/gdl-binaries/releases/latest/download/gdl-binaries.bin.gzip'
             loader.encoding = self.app.encoding
             loader.chunk_size = 1024 * 32 if self.app.is_compiled else 1024 * 32
@@ -103,16 +104,19 @@ class Installer:
 
     def download_progress(self, status: int, chunk: bytes) -> None:
         if status == 0:
-            self.data += chunk
-            self.ui.downloadBar.setValue(len(self.data))
+            self.window.binary_data += chunk  # noqa
+            self.ui.downloadBar.setValue(len(self.window.binary_data))  # noqa
             return
+        binary_data: bytes = zlib.decompress(self.window.binary_data, 0xF | 0x20) # noqa
         self.window.download_thread.quit()  # noqa
         self.window.data_downloader.deleteLater()  # noqa
         self.window.download_thread.deleteLater()  # noqa
         del self.window.download_thread # noqa
         del self.window.data_downloader # noqa
+        del self.window.binary_data  # noqa
         if status == 1:
-            self.logger.log('Bin downloaded')
+            self.logger.log('Bin downloaded', len(binary_data))  # noqa
+            # TODO: continue there
             return
         self.logger.error('Failed to download bin', chunk.decode(self.app.encoding))
         self.app.show_error(
