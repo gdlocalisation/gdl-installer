@@ -61,6 +61,7 @@ class App:
 
     def run_installer(self) -> None:
         self.child_app = installer.Installer(self)
+        self.logger.destroy()
         sys.exit(self.child_app.exit_code)
 
 

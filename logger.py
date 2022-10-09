@@ -10,6 +10,7 @@ class Logger:
             self.f = sys.stdout
         else:
             self.f = open(self.log_path, 'w', encoding=self.app.encoding)
+        self.is_opened = True
 
     def join_data(self, *data) -> str:  # noqa
         return ' '.join([str(_x) for _x in data]).replace('\n', '\n       ')
@@ -20,5 +21,8 @@ class Logger:
     def error(self, *data) -> None:
         self.f.write('[ERR]: ' + self.join_data(*data) + '\n')
 
-    def __del__(self) -> None:
+    def destroy(self) -> None:
+        if not self.is_opened:
+            return
+        self.is_opened = False
         self.f.close()
