@@ -20,6 +20,7 @@ class Installer:
             self.set_stylesheet('Darkeum')
         else:
             self.set_stylesheet('Ubuntu')
+        self.install_path = ''
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.window)
         self.after_setup_ui()
@@ -67,6 +68,19 @@ class Installer:
             self.ui.hackType.setEnabled(os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), 'extensions')))
             self.ui.gdhmType.setEnabled(os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), '.GDHM', 'dll')))
             self.check_radio_buttons()
+        elif tab_id == 3:
+            self.ui.goForwardButton.setEnabled(False)
+            self.ui.goForwardButton.setEnabled(False)
+            self.ui.cancelButton.setEnabled(False)
+            target_dir = 'adaf-dll'
+            if self.ui.modType.isChecked():
+                target_dir = 'mods'
+            elif self.ui.hackType.isChecked():
+                target_dir = 'extensions'
+            elif self.ui.gdhmType.isChecked():
+                target_dir = os.path.join('.GDHM', 'dll')
+            self.install_path = os.path.join(self.ui.folderpathEdit.text(), target_dir)
+            self.logger.log('Installing to', self.install_path)
 
     def go_forward(self) -> None:
         if self.ui.tabs.currentIndex() == 2:
@@ -85,7 +99,7 @@ class Installer:
         self.ui.tabs.setCurrentIndex(self.ui.tabs.currentIndex() - 1)
         self.tab_changed()
 
-    def check_radio_buttons(self, *args) -> None:
+    def check_radio_buttons(self, *args: any) -> None:
         self.ui.goForwardButton.setEnabled(True)
         if not self.ui.defaultType.isEnabled() and self.ui.defaultType.isChecked():
             self.ui.defaultType.setChecked(False)

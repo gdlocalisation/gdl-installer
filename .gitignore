@@ -3,4 +3,7 @@ __pycache__
 build
 dist
 main.spec
+*.bin.gz
+*.bin
+*.json
 *_ui.py
