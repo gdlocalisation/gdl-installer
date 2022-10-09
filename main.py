@@ -24,6 +24,7 @@ class App:
         self.logger = Logger(self)
         self.logger.log('GDL Log')
         self.logger.log('CWD', self.cwd)
+        self.logger.log('Executable', sys.executable)
         self.logger.log('Python', sys.version)
         self.logger.log('Version', sys.version_info)
         self.logger.log('Platform', platform.platform())
