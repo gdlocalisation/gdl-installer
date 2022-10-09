@@ -20,6 +20,7 @@ class Installer:
             self.set_stylesheet('Darkeum')
         else:
             self.set_stylesheet('Ubuntu')
+        self.install_game_path = ''
         self.install_path = ''
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.window)
@@ -71,7 +72,7 @@ class Installer:
             self.check_radio_buttons()
         elif tab_id == 3:
             self.ui.goForwardButton.setEnabled(False)
-            self.ui.goForwardButton.setEnabled(False)
+            self.ui.goBackButton.setEnabled(False)
             self.ui.cancelButton.setEnabled(False)
             target_dir = 'adaf-dll'
             if self.ui.modType.isChecked():
@@ -80,7 +81,8 @@ class Installer:
                 target_dir = 'extensions'
             elif self.ui.gdhmType.isChecked():
                 target_dir = os.path.join('.GDHM', 'dll')
-            self.install_path = os.path.join(self.ui.folderpathEdit.text(), target_dir)
+            self.install_game_path = self.ui.folderpathEdit.text()
+            self.install_path = os.path.join(self.install_game_path, target_dir)
             self.logger.log('Installing to', self.install_path)
 
     def go_forward(self) -> None:
