@@ -36,6 +36,7 @@ class Installer:
         self.ui.tabs.setCurrentIndex(0)
         self.ui.tabs.tabBar().setEnabled(not self.app.is_compiled)
         self.ui.folderpathEdit.setText(finder.SteamFinder(self.app).game_dir)
+        self.ui.folderpathEdit.setText('d:/games/gd_test')  # TODO: remove
         self.bind_events()
 
     def bind_events(self) -> None:
@@ -99,7 +100,7 @@ class Installer:
         self.ui.tabs.setCurrentIndex(self.ui.tabs.currentIndex() - 1)
         self.tab_changed()
 
-    def check_radio_buttons(self, *args: any) -> None:
+    def check_radio_buttons(self, *args: any) -> None:  # noqa
         self.ui.goForwardButton.setEnabled(True)
         if not self.ui.defaultType.isEnabled() and self.ui.defaultType.isChecked():
             self.ui.defaultType.setChecked(False)
