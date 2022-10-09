@@ -4,6 +4,7 @@ import time
 import requests
 import wintheme
 import finder
+import downloader
 from PyQt5 import QtCore, QtGui, QtWidgets
 from installer_ui import Ui_MainWindow
 
@@ -22,6 +23,7 @@ class Installer:
             self.set_stylesheet('Ubuntu')
         self.install_game_path = ''
         self.install_path = ''
+        self.data = b''
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.window)
         self.after_setup_ui()
@@ -83,7 +85,31 @@ class Installer:
                 target_dir = os.path.join('.GDHM', 'dll')
             self.install_game_path = self.ui.folderpathEdit.text()
             self.install_path = os.path.join(self.install_game_path, target_dir)
+            self.ui.downloadBar.setMaximum(self.json_data['size'])
             self.logger.log('Installing to', self.install_path)
+            self.window.download_thread = thread = QtCore.QThread()
+            self.window.data_downloader = loader = downloader.Downloader()
+            loader.url = 'https://github.com/gdlocalisation/gdl-binaries/releases/latest/download/gdl-binaries.bin.gzip'
+            loader.encoding = self.app.encoding
+            loader.chunk_size = 1024 * 32 if self.app.is_compiled else 1024 * 32
+            loader.moveToThread(thread)
+            loader.progress.connect(self.download_progress)
+            thread.started.connect(loader.run)
+            thread.start()
+
+    def download_progress(self, status: int, chunk: bytes) -> None:
+        if status == 0:
+            self.data += chunk
+            self.ui.downloadBar.setValue(len(self.data))
+            return
+        self.ui.cancelButton.setEnabled(True)
+        self.window.download_thread.quit()  # noqa
+        self.window.data_downloader.deleteLater()  # noqa
+        self.window.download_thread.deleteLater()  # noqa
+        del self.window.download_thread # noqa
+        del self.window.data_downloader # noqa
+        if status == 1:
+            return
 
     def go_forward(self) -> None:
         if self.ui.tabs.currentIndex() == 2:
