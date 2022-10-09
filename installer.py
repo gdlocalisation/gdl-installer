@@ -3,7 +3,7 @@ import sys
 import time
 import requests
 import wintheme
-import steam_finder
+import finder
 from PyQt5 import QtCore, QtGui, QtWidgets
 from installer_ui import Ui_MainWindow
 
@@ -32,14 +32,58 @@ class Installer:
         self.window.setWindowFlags(
             QtCore.Qt.WindowType.WindowCloseButtonHint | QtCore.Qt.WindowType.WindowMinimizeButtonHint
         )
-        # self.ui.tabs.tabBar().setEnabled(False)
-        self.ui.folderpathEdit.setText(steam_finder.SteamFinder(self.app).game_dir)
+        self.ui.tabs.setCurrentIndex(0)
+        self.ui.tabs.tabBar().setEnabled(not self.app.is_compiled)
+        self.ui.folderpathEdit.setText(finder.SteamFinder(self.app).game_dir)
         self.bind_events()
 
     def bind_events(self) -> None:
         self.ui.cancelButton.clicked.connect(lambda: self.app.show_question(
             self.window, 'Выход из установки', 'Вы уверены, что хотите выйти?', self.window.close
         ))
+        self.ui.goForwardButton.clicked.connect(self.go_forward)
+        self.ui.goBackButton.clicked.connect(self.go_back)
+        self.ui.folderpathButton.clicked.connect(self.select_install_dir)
+        self.ui.folderpathEdit.textChanged.connect(self.check_install_dir)
+        self.logger.log('Events bound')
+
+    def tab_changed(self) -> None:
+        tab_id = self.ui.tabs.currentIndex()
+        self.logger.log('Tab id', tab_id)
+        if tab_id == 0:
+            self.ui.goBackButton.setEnabled(False)
+            self.ui.goForwardButton.setEnabled(True)
+        elif tab_id == 1:
+            self.ui.goBackButton.setEnabled(True)
+            self.check_install_dir()
+
+    def go_forward(self) -> None:
+        self.ui.tabs.setCurrentIndex(self.ui.tabs.currentIndex() + 1)
+        self.tab_changed()
+
+    def go_back(self) -> None:
+        self.ui.tabs.setCurrentIndex(self.ui.tabs.currentIndex() - 1)
+        self.tab_changed()
+
+    def check_install_dir(self) -> None:
+        install_dir = self.ui.folderpathEdit.text()
+        self.logger.log('Install dir check', install_dir)
+        if not os.path.isdir(install_dir):
+            self.logger.log('Install dir check failed')
+            return self.ui.goForwardButton.setEnabled(False)
+        counter = 0
+        for fn in os.listdir(install_dir):
+            if fn.lower() in ('fmod.dll', 'libcocos2d.dll', 'libextensions.dll', 'sqlite3.dll', 'glew32.dll'):
+                counter += 1
+        self.logger.log('Install dir check', counter, counter > 3)
+        self.ui.goForwardButton.setEnabled(counter > 3)
+
+    def select_install_dir(self) -> None:
+        path = QtWidgets.QFileDialog.getExistingDirectory(
+            self.window, 'Выбор папки с игрой', self.ui.folderpathEdit.text()
+        )
+        self.ui.folderpathEdit.setText(path)
+        self.check_install_dir()
 
     def load_json(self) -> None:
         url = 'https://github.com/gdlocalisation/gdl-binaries/releases/latest/download/gdl-binaries.json'
