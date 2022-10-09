@@ -49,7 +49,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <property name="elideMode">
      <enum>Qt::ElideNone</enum>
@@ -237,7 +237,7 @@
       <property name="geometry">
        <rect>
         <x>50</x>
-        <y>130</y>
+        <y>110</y>
         <width>421</width>
         <height>17</height>
        </rect>
@@ -253,23 +253,23 @@
       <property name="geometry">
        <rect>
         <x>50</x>
-        <y>250</y>
+        <y>230</y>
         <width>421</width>
         <height>17</height>
        </rect>
       </property>
       <property name="text">
-       <string>Установка для GDDLLLOADER/ProxyDllLoader от Adaf</string>
+       <string>Установка для GDDLLLOADER/ProxyDllLoader от Adaf:</string>
       </property>
       <property name="checkable">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QRadioButton" name="modType">
       <property name="geometry">
        <rect>
         <x>50</x>
-        <y>160</y>
+        <y>140</y>
         <width>191</width>
         <height>17</height>
        </rect>
@@ -278,14 +278,14 @@
        <string>Установка для ModLdr от HJfod</string>
       </property>
       <property name="checkable">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QRadioButton" name="hackType">
       <property name="geometry">
        <rect>
         <x>50</x>
-        <y>190</y>
+        <y>170</y>
         <width>251</width>
         <height>17</height>
        </rect>
@@ -294,14 +294,14 @@
        <string>Установка для MegaHackv6.2+ от Absolute</string>
       </property>
       <property name="checkable">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QLabel" name="typeLabel">
       <property name="geometry">
        <rect>
         <x>50</x>
-        <y>90</y>
+        <y>70</y>
         <width>451</width>
         <height>20</height>
        </rect>
@@ -317,7 +317,7 @@
       <property name="geometry">
        <rect>
         <x>50</x>
-        <y>220</y>
+        <y>200</y>
         <width>251</width>
         <height>17</height>
        </rect>
@@ -326,7 +326,20 @@
        <string>Установка для GDHM</string>
       </property>
       <property name="checkable">
-       <bool>false</bool>
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="adafpathEdit">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>260</y>
+        <width>371</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>adaf-dll</string>
       </property>
      </widget>
     </widget>

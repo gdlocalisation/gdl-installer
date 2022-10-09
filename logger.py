@@ -5,7 +5,7 @@ import sys
 class Logger:
     def __init__(self, app: any) -> None:
         self.app = app
-        self.log_path = os.path.join(os.getenv('temp'), 'gdl-installer.log')
+        self.log_path = os.path.join(self.app.temp_dir, 'gdl-installer.log')
         if not self.app.is_compiled and True:
             self.f = sys.stdout
         else:

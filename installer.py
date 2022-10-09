@@ -45,6 +45,8 @@ class Installer:
         self.ui.goBackButton.clicked.connect(self.go_back)
         self.ui.folderpathButton.clicked.connect(self.select_install_dir)
         self.ui.folderpathEdit.textChanged.connect(self.check_install_dir)
+        self.ui.adafpathEdit.textChanged.connect(self.check_radio_buttons)
+        self.ui.loaderType.changeEvent = self.check_radio_buttons
         self.logger.log('Events bound')
 
     def tab_changed(self) -> None:
@@ -55,15 +57,39 @@ class Installer:
             self.ui.goForwardButton.setEnabled(True)
         elif tab_id == 1:
             self.ui.goBackButton.setEnabled(True)
+            self.ui.goForwardButton.setText('Далее')
             self.check_install_dir()
+        elif tab_id == 2:
+            self.ui.goBackButton.setEnabled(True)
+            self.ui.goForwardButton.setText('Установить')
+            self.ui.defaultType.setEnabled(not os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), 'adaf-dll')))
+            self.ui.modType.setEnabled(os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), 'mods')))
+            self.ui.hackType.setEnabled(os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), 'extensions')))
+            self.ui.gdhmType.setEnabled(os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), '.GDHM', 'dll')))
+            self.check_radio_buttons()
 
     def go_forward(self) -> None:
+        if self.ui.tabs.currentIndex() == 2:
+            if self.ui.loaderType.isChecked():
+                if not os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), self.ui.adafpathEdit.text())):
+                    self.app.show_error(
+                        self.window,
+                        'Ошибка',
+                        'Не удалось найти папку: ' + self.ui.adafpathEdit.text()
+                    )
+                    return
         self.ui.tabs.setCurrentIndex(self.ui.tabs.currentIndex() + 1)
         self.tab_changed()
 
     def go_back(self) -> None:
         self.ui.tabs.setCurrentIndex(self.ui.tabs.currentIndex() - 1)
         self.tab_changed()
+
+    def check_radio_buttons(self, *args) -> None:
+        self.ui.goForwardButton.setEnabled(True)
+        if not self.ui.defaultType.isEnabled() and self.ui.defaultType.isChecked():
+            self.ui.defaultType.setChecked(False)
+            self.ui.loaderType.setChecked(True)
 
     def check_install_dir(self) -> None:
         install_dir = self.ui.folderpathEdit.text()

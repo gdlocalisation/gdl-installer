@@ -10,7 +10,8 @@ def main() -> None:
         f_ext = fn.split('.')[-1].lower()
         if not f_ext == 'ui':
             continue
-        fp = os.path.join(cwd, fn)
+        # fp = os.path.join(cwd, fn)
+        fp = fn
         out_fp = os.path.join(cwd, fn[:-len(f_ext) - 1] + '_ui.py')
         subprocess.call([
             'pyuic5',

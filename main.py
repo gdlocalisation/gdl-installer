@@ -13,6 +13,7 @@ class App:
         self.cwd = os.path.dirname(__file__) or os.getcwd()
         os.chdir(self.cwd)
         self.files_dir = os.path.join(self.cwd, 'files')
+        self.temp_dir = os.getenv('temp')
         self.exec_fn = os.path.basename(sys.executable)
         self.is_compiled = not self.exec_fn.lower().split('.')[0] == 'python'
         self.spawn_args = [sys.executable] if self.is_compiled else [sys.executable, __file__]
@@ -34,14 +35,14 @@ class App:
         count_10 = 10 ** count
         return round(number * count_10) / count_10
 
-    def show_error(self, window: any, caption: str, text: str, cb: any) -> QtWidgets.QMessageBox:  # noqa
+    def show_error(self, window: any, caption: str, text: str, cb: any = None) -> QtWidgets.QMessageBox:  # noqa
         box = QtWidgets.QMessageBox(window)
         if self.theme & wintheme.THEME_DARK:
             wintheme.set_window_theme(int(box.winId()), wintheme.THEME_DARK)
         box.setIcon(box.Icon.Critical)
         box.setWindowTitle(caption)
         box.setText(text)
-        box.addButton('  OK  ', box.ActionRole).clicked.connect(cb)
+        box.addButton('  OK  ', box.ActionRole).clicked.connect(cb or box.hide)
         box.show()
         return box
 
