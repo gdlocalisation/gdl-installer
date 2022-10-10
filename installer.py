@@ -39,7 +39,8 @@ class Installer:
         self.ui.tabs.setCurrentIndex(0)
         self.ui.tabs.tabBar().setEnabled(not self.app.is_compiled)
         self.ui.folderpathEdit.setText(finder.SteamFinder(self.app).game_dir)
-        self.ui.folderpathEdit.setText('d:/games/gd_test')  # TODO: remove
+        if not self.app.is_compiled:
+            self.ui.folderpathEdit.setText('d:/games/gd_test')  # TODO: remove
         self.bind_events()
 
     def bind_events(self) -> None:
@@ -116,6 +117,10 @@ class Installer:
         del self.window.binary_data  # noqa
         if status == 1:
             self.logger.log('Bin downloaded', len(binary_data))  # noqa
+            backup_path = os.path.join(self.install_game_path, 'gdl-backup')
+            if not os.path.isdir(backup_path):
+                os.mkdir(backup_path)
+                self.logger.log('Backup dir created')
             # TODO: continue there
             return
         self.logger.error('Failed to download bin', chunk.decode(self.app.encoding))
