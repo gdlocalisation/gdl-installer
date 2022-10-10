@@ -109,8 +109,16 @@ class Installer:
         if status == 0:
             self.ui.unpackBar.setValue(len(self.binary_data) - int(content))
             return
+        self.window.unzip_thread.quit()  # noqa
+        self.window.data_unzipper.deleteLater()  # noqa
+        self.window.unzip_thread.deleteLater()  # noqa
+        del self.window.unzip_thread # noqa
+        del self.window.data_unzipper # noqa
         if status == 1:
-            # TODO: continue here (clear thread)
+            self.binary_data = self.binary_data[self.json_data['gdl-assets-size']:]
+            print(self.binary_data[:100])
+            self.logger.log('Data Unzipped')
+            # TODO: continue here
             return
         self.logger.error('Failed to unzip assets', content)
         self.app.show_error(
