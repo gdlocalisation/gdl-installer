@@ -24,6 +24,7 @@ class Installer:
             self.set_stylesheet('Ubuntu')
         self.install_game_path = ''
         self.install_path = ''
+        self.binary_data = b''
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.window)
         self.after_setup_ui()
@@ -98,32 +99,58 @@ class Installer:
             self.window.binary_data = b''
             loader.url = 'https://github.com/gdlocalisation/gdl-binaries/releases/latest/download/gdl-binaries.bin.gzip'
             loader.encoding = self.app.encoding
-            loader.chunk_size = 1024 * 32 if self.app.is_compiled else 1024 * 32
+            loader.chunk_size = 1024 * 32 if self.app.is_compiled else 1024 * 128
             loader.moveToThread(thread)
             loader.progress.connect(self.download_progress)
             thread.started.connect(loader.run)
             thread.start()
+
+    def unzip_progress(self, status: int, content: str) -> None:
+        if status == 0:
+            self.ui.unpackBar.setValue(len(self.binary_data) - int(content))
+            return
+        if status == 1:
+            # TODO: continue here (clear thread)
+            return
+        self.logger.error('Failed to unzip assets', content)
+        self.app.show_error(
+            self.window,
+            'Ошибка',
+            'Не распоковать архив.\nПовторите попытку позже.',
+            lambda: self.tab_changed(2)
+        )
 
     def download_progress(self, status: int, chunk: bytes) -> None:
         if status == 0:
             self.window.binary_data += chunk  # noqa
             self.ui.downloadBar.setValue(len(self.window.binary_data))  # noqa
             return
-        binary_data: bytes = zlib.decompress(self.window.binary_data, 0xF | 0x20) # noqa
         self.window.download_thread.quit()  # noqa
         self.window.data_downloader.deleteLater()  # noqa
         self.window.download_thread.deleteLater()  # noqa
         del self.window.download_thread # noqa
         del self.window.data_downloader # noqa
-        del self.window.binary_data  # noqa
         if status == 1:
-            self.logger.log('Bin downloaded', len(binary_data))  # noqa
+            self.binary_data = zlib.decompress(self.window.binary_data, 0xF | 0x20) # noqa
+            del self.window.binary_data  # noqa
+            self.logger.log('Bin downloaded', len(self.binary_data))  # noqa
             backup_path = os.path.join(self.install_game_path, 'gdl-backup')
             if not os.path.isdir(backup_path):
                 os.mkdir(backup_path)
                 self.logger.log('Backup dir created')
-            # TODO: continue there
+            self.logger.log('Unzipping to', self.install_game_path)
+            self.window.unzip_thread = thread = QtCore.QThread()
+            self.window.data_unzipper = unzipper = threader.Unzipper()
+            unzipper.encoding = self.app.encoding
+            unzipper.base_dir = self.install_game_path
+            unzipper.json_data = self.json_data['gdl-assets']
+            unzipper.bin_data = self.binary_data
+            unzipper.moveToThread(thread)
+            unzipper.progress.connect(self.unzip_progress)
+            thread.started.connect(unzipper.run)
+            thread.start()
             return
+        del self.window.binary_data  # noqa
         self.logger.error('Failed to download bin', chunk.decode(self.app.encoding))
         self.app.show_error(
             self.window,
