@@ -91,6 +91,7 @@ class Installer:
             self.install_game_path = self.ui.folderpathEdit.text()
             self.install_path = os.path.join(self.install_game_path, target_dir)
             self.ui.downloadBar.setMaximum(self.json_data['size'])
+            self.ui.unpackBar.setMaximum(self.json_data['gdl-assets-size'])
             self.logger.log('Installing to', self.install_path)
             self.window.download_thread = thread = QtCore.QThread()
             self.window.data_downloader = loader = threader.Downloader()
