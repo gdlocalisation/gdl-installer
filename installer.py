@@ -116,7 +116,6 @@ class Installer:
         del self.window.data_unzipper # noqa
         if status == 1:
             self.binary_data = self.binary_data[self.json_data['gdl-assets-size']:]
-            print(self.binary_data[:100])
             self.logger.log('Data Unzipped')
             # TODO: continue here
             return
