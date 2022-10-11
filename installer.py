@@ -3,6 +3,7 @@ import sys
 import shutil
 import json
 import zlib
+import winreg
 import requests
 import wintheme
 import finder
@@ -114,13 +115,46 @@ class Installer:
             self.ui.cancelButton.setEnabled(False)
             self.ui.goForwardButton.setText('Готово!')
 
+    def register_app(self) -> None:
+        reg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
+        try:
+            winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, self.app.reg_path)
+        except WindowsError:
+            self.logger.error('Failed to create reg key')
+            return
+        key = winreg.OpenKey(reg, self.app.reg_path, 0, winreg.KEY_WRITE)
+        winreg.SetValueEx(key, 'DisplayIcon', 0, winreg.REG_SZ, os.path.join(self.install_game_path, 'gdl-icon.ico'))
+        winreg.SetValueEx(key, 'DisplayName', 0, winreg.REG_SZ, 'Geometry Dash Localisation')
+        winreg.SetValueEx(key, 'DisplayVersion', 0, winreg.REG_SZ, '1.0.0')
+        winreg.SetValueEx(key, 'URLInfoAbout', 0, winreg.REG_SZ, 'https://www.gdlocalisation.gq/')
+        installer_path = '"' + os.path.join(self.install_game_path, os.path.basename(self.app.spawn_args[-1])) + '"'
+        if not self.app.is_compiled:
+            installer_path = '"' + sys.executable + '"' + installer_path
+        self.logger.log('Installer path', installer_path)
+        winreg.SetValueEx(
+            key,
+            'UninstallString',
+            0,
+            winreg.REG_SZ,
+            installer_path.replace('/', '\\') + ' --remove'
+        )
+        winreg.SetValueEx(key, 'Publisher', 0, winreg.REG_SZ, 'The GDL Community')
+        winreg.SetValueEx(key, 'NoModify', 0, winreg.REG_DWORD, 1)
+        winreg.SetValueEx(key, 'NoRepair', 0, winreg.REG_DWORD, 1)
+        winreg.CloseKey(key)
+
     def save_settings(self) -> None:
         shutil.copy(
             self.app.spawn_args[-1],
             os.path.join(self.install_game_path, os.path.basename(self.app.spawn_args[-1]))
         )
+        shutil.copy(
+            os.path.join(self.app.files_dir, 'gdl_icon.ico'),
+            os.path.join(self.install_game_path, 'gdl-icon.ico')
+        )
         json_result = {
             'is_default': self.ui.defaultType.isChecked(),
+            'is_registered': self.ui.regappBox.isChecked(),
             'dll_path': self.install_path,
             'game_path': self.install_game_path,
             'json_data': self.json_data
@@ -129,6 +163,8 @@ class Installer:
         f.write(json.dumps(json_result))
         f.close()
         self.logger.log('Installer json wrote')
+        if self.ui.regappBox.isChecked():
+            self.register_app()
         self.tab_changed(4)
 
     def unzip_gdl(self) -> None:

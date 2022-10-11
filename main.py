@@ -17,8 +17,10 @@ class App:
         self.exec_fn = os.path.basename(sys.executable)
         self.is_compiled = not self.exec_fn.lower().split('.')[0] == 'python'
         self.spawn_args = [sys.executable] if self.is_compiled else [sys.executable, __file__]
+        self.spawn_str = '"' + '"'.join(self.spawn_args) + '"'
         self.exec_script = self.spawn_args[-1]
         self.theme = wintheme.get_apps_theme()
+        self.reg_path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\GDLocalisation'
         if False:
             self.theme = wintheme.THEME_LIGHT  # noqa
         self.logger = Logger(self)
