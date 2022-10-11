@@ -43,9 +43,16 @@ class Installer:
         )
         self.ui.tabs.setCurrentIndex(0)
         self.ui.tabs.tabBar().setEnabled(not self.app.is_compiled)
-        self.ui.folderpathEdit.setText(finder.SteamFinder(self.app).game_dir)
+        if self.installer_data:
+            self.ui.folderpathEdit.setText(self.installer_data['game_path'])
+            self.ui.regappBox.setChecked(self.installer_data['is_registered'])
+            self.ui.folderpathEdit.setEnabled(False)
+            self.ui.folderpathButton.setEnabled(False)
+            self.ui.regappBox.setEnabled(False)
+        else:
+            self.ui.folderpathEdit.setText(finder.SteamFinder(self.app).game_dir)
         if not self.app.is_compiled:
-            self.ui.folderpathEdit.setText('d:/games/gd_test')  # TODO: remove
+            self.ui.folderpathEdit.setText('d:/games/gd_test')
         self.bind_events()
 
     def bind_events(self) -> None:
@@ -82,6 +89,13 @@ class Installer:
             self.ui.hackType.setEnabled(os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), 'extensions')))
             self.ui.gdhmType.setEnabled(os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), '.GDHM', 'dll')))
             self.check_radio_buttons()
+            if self.installer_data:
+                self.ui.defaultType.setEnabled(False)
+                self.ui.modType.setEnabled(False)
+                self.ui.hackType.setEnabled(False)
+                self.ui.gdhmType.setEnabled(False)
+                self.ui.loaderType.setEnabled(False)
+                self.ui.adafpathEdit.setEnabled(False)
         elif tab_id == 3:
             self.ui.goForwardButton.setEnabled(False)
             self.ui.goBackButton.setEnabled(False)
@@ -95,6 +109,8 @@ class Installer:
                 target_dir = os.path.join('.GDHM', 'dll')
             self.install_game_path = self.ui.folderpathEdit.text()
             self.install_path = os.path.join(self.install_game_path, target_dir)
+            if self.installer_data:
+                self.install_path = self.installer_data['dll_path']
             if not os.path.isdir(self.install_path):
                 os.mkdir(self.install_path)
             self.ui.downloadBar.setMaximum(self.json_data['size'])
@@ -156,16 +172,23 @@ class Installer:
         winreg.CloseKey(key)
 
     def save_settings(self) -> None:
-        shutil.copy(
-            self.app.spawn_args[-1],
-            os.path.join(self.install_game_path, os.path.basename(self.app.spawn_args[-1]))
-        )
+        try:
+            shutil.copy(
+                self.app.spawn_args[-1],
+                os.path.join(self.install_game_path, os.path.basename(self.app.spawn_args[-1]))
+            )
+        except Exception as err:
+            self.logger.error('Failed to copy installer', err)
         shutil.copy(
             os.path.join(self.app.files_dir, 'gdl_icon.ico'),
             os.path.join(self.install_game_path, 'gdl-icon.ico')
         )
+        if self.installer_data:
+            is_default = self.installer_data['is_default']
+        else:
+            is_default = self.ui.defaultType.isChecked()
         json_result = {
-            'is_default': self.ui.defaultType.isChecked(),
+            'is_default': is_default,
             'is_registered': self.ui.regappBox.isChecked(),
             'dll_path': self.install_path,
             'game_path': self.install_game_path,
