@@ -32,6 +32,18 @@ class App:
         self.child_app = None
         self.run_installer()
 
+    def read_binary(self, fn: str) -> bytes:  # noqa
+        f = open(fn, 'rb')
+        result = f.read()
+        f.close()
+        return result
+
+    def write_binary(self, fn: str, content: bytes) -> int:  # noqa
+        f = open(fn, 'wb')
+        result = f.write(content)
+        f.close()
+        return result
+
     def round_point(self, number: float, count: int = 2) -> None:  # noqa
         count_10 = 10 ** count
         return round(number * count_10) / count_10

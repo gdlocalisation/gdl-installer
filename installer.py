@@ -1,11 +1,11 @@
 import os
 import sys
-import time
 import zlib
 import requests
 import wintheme
 import finder
 import threader
+import time
 from PyQt5 import QtCore, QtGui, QtWidgets
 from installer_ui import Ui_MainWindow
 
@@ -91,6 +91,8 @@ class Installer:
                 target_dir = os.path.join('.GDHM', 'dll')
             self.install_game_path = self.ui.folderpathEdit.text()
             self.install_path = os.path.join(self.install_game_path, target_dir)
+            if not os.path.isdir(self.install_path):
+                os.mkdir(self.install_path)
             self.ui.downloadBar.setMaximum(self.json_data['size'])
             self.ui.unpackBar.setMaximum(self.json_data['gdl-assets-size'])
             self.logger.log('Installing to', self.install_path)
@@ -105,6 +107,23 @@ class Installer:
             thread.started.connect(loader.run)
             thread.start()
 
+    def unzip_gdl(self) -> None:
+        self.logger.log('Unzipping gdl into memory')
+        files = {}
+        for data in self.json_data['gdl-binaries']:
+            files[data['fn']] = self.binary_data[:data['size']]
+            self.binary_data = self.binary_data[data['size']:]
+        self.logger.log('Other size 0 is', len(self.binary_data))
+        for fn in ('gdl_patches.json', 'ru_ru.json', 'str_dump6.txt'):
+            self.app.write_binary(os.path.join(self.install_game_path, fn), files[fn])
+        if self.ui.defaultType.isChecked():
+            self.app.write_binary(os.path.join(self.install_game_path, 'xinput9_1_0.dll'), files['xinput9_1_0.dll'])
+        self.app.write_binary(
+            os.path.join(self.install_path, 'GDLocalisation.dll'),
+            files['GDLocalisation.dll']
+        )
+        self.logger.log('Binaries are unzipped')
+
     def unzip_progress(self, status: int, content: str) -> None:
         if status == 0:
             self.ui.unpackBar.setValue(len(self.binary_data) - int(content))
@@ -112,12 +131,10 @@ class Installer:
         self.window.unzip_thread.quit()  # noqa
         self.window.data_unzipper.deleteLater()  # noqa
         self.window.unzip_thread.deleteLater()  # noqa
-        del self.window.unzip_thread # noqa
-        del self.window.data_unzipper # noqa
         if status == 1:
             self.binary_data = self.binary_data[self.json_data['gdl-assets-size']:]
             self.logger.log('Data Unzipped')
-            # TODO: continue here
+            self.unzip_gdl()
             return
         self.logger.error('Failed to unzip assets', content)
         self.app.show_error(
@@ -135,8 +152,6 @@ class Installer:
         self.window.download_thread.quit()  # noqa
         self.window.data_downloader.deleteLater()  # noqa
         self.window.download_thread.deleteLater()  # noqa
-        del self.window.download_thread # noqa
-        del self.window.data_downloader # noqa
         if status == 1:
             self.binary_data = zlib.decompress(self.window.binary_data, 0xF | 0x20) # noqa
             del self.window.binary_data  # noqa
