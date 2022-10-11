@@ -16,7 +16,7 @@ def main(argv: list) -> int:
         '--onefile',
         '--uac-admin',
         '--add-data',
-        'files;files',
+        f'{files_dir};files',
         '-w',
         '-i',
         icon_path,
