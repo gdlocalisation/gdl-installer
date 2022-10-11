@@ -82,6 +82,15 @@ class Installer:
             self.ui.goForwardButton.setText('Далее')
             self.check_install_dir()
         elif tab_id == 2:
+            if not self.installer_data:
+                check_fn = os.path.join(self.ui.folderpathEdit.text(), 'gdl-installer.json')
+                if os.path.isfile(check_fn):
+                    self.app.show_error(
+                        self.window,
+                        'Ошибка',
+                        'Тут GDL уже установлен!\nЗапускайте установщик из папки Geometry Dash.',
+                        lambda: self.tab_changed(1)
+                    )
             self.ui.goBackButton.setEnabled(True)
             self.ui.goForwardButton.setText('Установить')
             self.ui.defaultType.setEnabled(not os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), 'adaf-dll')))
