@@ -1,5 +1,7 @@
 import os
 import sys
+import shutil
+import json
 import zlib
 import requests
 import wintheme
@@ -113,6 +115,20 @@ class Installer:
             self.ui.goForwardButton.setText('Готово!')
 
     def save_settings(self) -> None:
+        shutil.copy(
+            self.app.spawn_args[-1],
+            os.path.join(self.install_game_path, os.path.basename(self.app.spawn_args[-1]))
+        )
+        json_result = {
+            'is_default': self.ui.defaultType.isChecked(),
+            'dll_path': self.install_path,
+            'game_path': self.install_game_path,
+            'json_data': self.json_data
+        }
+        f = open(os.path.join(self.install_game_path, 'gdl-installer.json'), 'w', encoding=self.app.encoding)
+        f.write(json.dumps(json_result))
+        f.close()
+        self.logger.log('Installer json wrote')
         self.tab_changed(4)
 
     def unzip_gdl(self) -> None:
