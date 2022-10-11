@@ -1,5 +1,5 @@
 import os
-import sys
+import shutil
 import winapi
 
 
@@ -13,8 +13,50 @@ class Uninstaller:
         if not self.ask_processing():
             return
         self.logger.log('Uninstalling GDL')
+        self.remove_assets()
 
-    def ask_processing(self) -> bool:
+    def remove_assets(self) -> None:
+        self.logger.log('Removing assets')
+        for data in self.json_data['json_data']['gdl-assets']:
+            fn = data['fn']
+            backup_fp = os.path.join(self.json_data['game_path'], 'gdl-backup', fn)
+            res_fp = os.path.join(self.json_data['game_path'], 'Resources', fn)
+            if fn.lower().startswith('gdl'):
+                if os.path.isfile(res_fp):
+                    os.remove(res_fp)
+                if os.path.isfile(backup_fp):
+                    os.remove(backup_fp)
+                    continue
+                continue
+            if not os.path.isfile(backup_fp):
+                continue
+            if os.path.isfile(res_fp):
+                os.remove(res_fp)
+            os.rename(backup_fp, res_fp)
+        shutil.rmtree(os.path.join(self.json_data['game_path'], 'gdl-backup'))
+        dll_fp = os.path.join(self.json_data['dll_path'], 'GDLocalisation.dll')
+        files_to_remove = ['gdl_patches.json', 'gdl-icon.ico', 'gdl-installer.json', 'ru_ru.json', 'str_dump6.txt']
+        if os.path.isfile(dll_fp):
+            os.remove(dll_fp)
+        if self.json_data['is_default']:
+            files_to_remove.append('xinput9_1_0.dll')
+            shutil.rmtree(self.json_data['dll_path'])
+        for fn in files_to_remove:
+            fp = os.path.join(self.json_data['game_path'], fn)
+            if not os.path.isfile(fp):
+                continue
+            os.remove(fp)
+        self.finish_uninstall()
+
+    def finish_uninstall(self) -> None:  # noqa
+        winapi.MessageBoxW(
+            0,
+            'Geometry Dash Localisation Удалён!',
+            'Удаление GDL',
+            0x00000040
+        )
+
+    def ask_processing(self) -> bool:  # noqa
         msg_result = winapi.MessageBoxW(
             0,
             'Вы уверены, что хотите удалить GDL?',
