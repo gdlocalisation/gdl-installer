@@ -5,7 +5,8 @@ import json
 import wintheme
 import winapi
 import installer
-from logger import Logger
+import uninstaller
+import logger
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -25,7 +26,7 @@ class App:
         self.reg_path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\GDLocalisation'
         if False:
             self.theme = wintheme.THEME_LIGHT  # noqa
-        self.logger = Logger(self)
+        self.logger = logger.Logger(self)
         self.logger.log('GDL Log')
         self.logger.log('CWD', self.cwd)
         self.logger.log('Executable', sys.executable)
@@ -82,6 +83,11 @@ class App:
         self.logger.destroy()
         sys.exit(self.child_app.exit_code)
 
+    def run_uninstaller(self, json_data: dict = None) -> None:
+        self.child_app = uninstaller.Uninstaller(self, json_data)
+        self.logger.destroy()
+        sys.exit(self.child_app.exit_code)
+
     def main(self) -> None:
         settings_path = os.path.join(os.path.dirname(self.spawn_args[-1]), 'gdl-installer.json')
         if not os.path.isfile(settings_path):
@@ -92,7 +98,7 @@ class App:
         if sys.argv[-1] == '--modify':
             return self.run_installer(json_data)
         if sys.argv[-1] == '--remove':
-            return  # TODO: uninstaller
+            return self.run_uninstaller(json_data)
         msg_result = winapi.MessageBoxW(
             0,
             'Да - Обновить GDL.\nНет - Удалить GDL.\nОтмена - выйти.',
@@ -102,7 +108,7 @@ class App:
         if msg_result == 6:
             return self.run_installer(json_data)
         if msg_result == 7:
-            return  # TODO: uninstaller
+            return self.run_uninstaller(json_data)
 
 
 if __name__ == '__main__':
