@@ -106,6 +106,14 @@ class Installer:
             loader.progress.connect(self.download_progress)
             thread.started.connect(loader.run)
             thread.start()
+        elif tab_id == 4:
+            self.ui.goForwardButton.setEnabled(True)
+            self.ui.goBackButton.setEnabled(False)
+            self.ui.cancelButton.setEnabled(False)
+            self.ui.goForwardButton.setText('Готово!')
+
+    def save_settings(self) -> None:
+        self.tab_changed(4)
 
     def unzip_gdl(self) -> None:
         self.logger.log('Unzipping gdl into memory')
@@ -123,6 +131,7 @@ class Installer:
             files['GDLocalisation.dll']
         )
         self.logger.log('Binaries are unzipped')
+        self.save_settings()
 
     def unzip_progress(self, status: int, content: str) -> None:
         if status == 0:
@@ -191,6 +200,9 @@ class Installer:
                         'Не удалось найти папку: ' + self.ui.adafpathEdit.text()
                     )
                     return
+        if self.ui.tabs.currentIndex() == 4:
+            self.window.close()
+            return
         self.ui.tabs.setCurrentIndex(self.ui.tabs.currentIndex() + 1)
         self.tab_changed()
 
