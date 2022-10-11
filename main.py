@@ -1,7 +1,9 @@
 import os
 import sys
 import platform
+import json
 import wintheme
+import winapi
 import installer
 from logger import Logger
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -32,7 +34,7 @@ class App:
         self.logger.log('Platform', platform.platform())
         self.logger.log('Theme', wintheme.theme_to_string.get(self.theme))
         self.child_app = None
-        self.run_installer()
+        self.main()
 
     def read_binary(self, fn: str) -> bytes:  # noqa
         f = open(fn, 'rb')
@@ -75,10 +77,32 @@ class App:
         box.show()
         return box
 
-    def run_installer(self) -> None:
-        self.child_app = installer.Installer(self)
+    def run_installer(self, json_data: dict = None) -> None:
+        self.child_app = installer.Installer(self, json_data)
         self.logger.destroy()
         sys.exit(self.child_app.exit_code)
+
+    def main(self) -> None:
+        settings_path = os.path.join(os.path.dirname(self.spawn_args[-1]), 'gdl-installer.json')
+        if not os.path.isfile(settings_path):
+            return self.run_installer()
+        f = open(settings_path, 'r', encoding=self.encoding)
+        json_data = json.loads(f.read())
+        f.close()
+        if sys.argv[-1] == '--modify':
+            return self.run_installer(json_data)
+        if sys.argv[-1] == '--remove':
+            return  # TODO: uninstaller
+        msg_result = winapi.MessageBoxW(
+            0,
+            'Да - Обновить GDL.\nНет - Удалить GDL.\nОтмена - выйти.',
+            'Изменение GDL',
+            0x00000003 | 0x00000020
+        )
+        if msg_result == 6:
+            return self.run_installer(json_data)
+        if msg_result == 7:
+            return  # TODO: uninstaller
 
 
 if __name__ == '__main__':

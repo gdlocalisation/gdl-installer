@@ -14,8 +14,9 @@ from installer_ui import Ui_MainWindow
 
 
 class Installer:
-    def __init__(self, app: any) -> None:
+    def __init__(self, app: any, installer_data: dict = None) -> None:
         self.app = app
+        self.installer_data = installer_data or {}
         self.logger = self.app.logger
         self.application = QtWidgets.QApplication(sys.argv)
         self.window = QtWidgets.QMainWindow()
@@ -119,18 +120,29 @@ class Installer:
         reg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
         try:
             winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, self.app.reg_path)
-        except WindowsError:
-            self.logger.error('Failed to create reg key')
+        except Exception as err:
+            self.logger.error('Failed to create reg key', err)
             return
-        key = winreg.OpenKey(reg, self.app.reg_path, 0, winreg.KEY_WRITE)
+        try:
+            key = winreg.OpenKey(reg, self.app.reg_path, 0, winreg.KEY_WRITE)
+        except Exception as err:
+            self.logger.error('Failed to open reg key', err)
+            return
         winreg.SetValueEx(key, 'DisplayIcon', 0, winreg.REG_SZ, os.path.join(self.install_game_path, 'gdl-icon.ico'))
         winreg.SetValueEx(key, 'DisplayName', 0, winreg.REG_SZ, 'Geometry Dash Localisation')
         winreg.SetValueEx(key, 'DisplayVersion', 0, winreg.REG_SZ, '1.0.0')
         winreg.SetValueEx(key, 'URLInfoAbout', 0, winreg.REG_SZ, 'https://www.gdlocalisation.gq/')
         installer_path = '"' + os.path.join(self.install_game_path, os.path.basename(self.app.spawn_args[-1])) + '"'
         if not self.app.is_compiled:
-            installer_path = '"' + sys.executable + '"' + installer_path
+            installer_path = '"' + sys.executable + '" ' + installer_path
         self.logger.log('Installer path', installer_path)
+        winreg.SetValueEx(
+            key,
+            'ModifyPath',
+            0,
+            winreg.REG_SZ,
+            installer_path.replace('/', '\\') + ' --modify'
+        )
         winreg.SetValueEx(
             key,
             'UninstallString',
@@ -139,8 +151,8 @@ class Installer:
             installer_path.replace('/', '\\') + ' --remove'
         )
         winreg.SetValueEx(key, 'Publisher', 0, winreg.REG_SZ, 'The GDL Community')
-        winreg.SetValueEx(key, 'NoModify', 0, winreg.REG_DWORD, 1)
-        winreg.SetValueEx(key, 'NoRepair', 0, winreg.REG_DWORD, 1)
+        winreg.SetValueEx(key, 'NoModify', 0, winreg.REG_DWORD, 0)
+        winreg.SetValueEx(key, 'NoRepair', 0, winreg.REG_DWORD, 0)
         winreg.CloseKey(key)
 
     def save_settings(self) -> None:
