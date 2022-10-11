@@ -11,6 +11,8 @@ def main(argv: list) -> int:
     icon_path = os.path.join(files_dir, 'gdl_icon.ico')
     exe_out_path = os.path.join(cwd, 'dist', 'main.exe')
     exe_path = os.path.join(cwd, 'dist', 'GDL_Installer.exe')
+    if os.path.isfile(exe_path):
+        os.remove(exe_path)
     result = subprocess.call([
         'pyinstaller',
         '--onefile',
