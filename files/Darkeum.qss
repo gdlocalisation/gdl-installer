@@ -515,9 +515,7 @@ QCheckBox::indicator
 
 QCheckBox::indicator:checked
 {
-    border: 1px solid #607cff;
-	image: url(://checkbox_checked_darkeum.png);
-
+    background-color: #607cff;
 }
 
 
