@@ -189,9 +189,21 @@ class Installer:
         for fn in ('gdl_patches.json', 'ru_ru.json', 'str_dump6.txt'):
             self.app.write_binary(os.path.join(self.install_game_path, fn), files[fn])
         if self.ui.defaultType.isChecked():
-            self.app.write_binary(os.path.join(self.install_game_path, 'xinput9_1_0.dll'), files['xinput9_1_0.dll'])
+            try:
+                self.app.write_binary(os.path.join(self.install_game_path, 'xinput9_1_0.dll'), files['xinput9_1_0.dll'])
+            except Exception as err:
+                self.logger.log('Failed to write xinput', err)
+        dll_path = os.path.join(self.install_path, 'GDLocalisation.dll')
+        dll_bak_path = dll_path + '.bak'
+        if os.path.isfile(dll_bak_path):
+            try:
+                os.remove(dll_bak_path)
+            except Exception as err:
+                self.logger.log('Failed to remove dll backup', err)
+        if os.path.isfile(dll_path):
+            os.rename(dll_path, dll_bak_path)
         self.app.write_binary(
-            os.path.join(self.install_path, 'GDLocalisation.dll'),
+            dll_path,
             files['GDLocalisation.dll']
         )
         self.logger.log('Binaries are unzipped')

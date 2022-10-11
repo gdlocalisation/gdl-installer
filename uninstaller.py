@@ -39,6 +39,8 @@ class Uninstaller:
         files_to_remove = ['gdl_patches.json', 'gdl-icon.ico', 'gdl-installer.json', 'ru_ru.json', 'str_dump6.txt']
         if os.path.isfile(dll_fp):
             os.remove(dll_fp)
+        if os.path.isfile(dll_fp + '.bak'):
+            os.remove(dll_fp + '.bak')
         if self.json_data['is_default']:
             files_to_remove.append('xinput9_1_0.dll')
             shutil.rmtree(self.json_data['dll_path'])
