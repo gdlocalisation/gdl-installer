@@ -7,3 +7,4 @@ main.spec
 *.bin
 *.json
 *_ui.py
+*.exe
