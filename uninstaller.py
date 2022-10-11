@@ -1,5 +1,6 @@
 import os
 import shutil
+import winreg
 import winapi
 
 
@@ -41,6 +42,12 @@ class Uninstaller:
         if self.json_data['is_default']:
             files_to_remove.append('xinput9_1_0.dll')
             shutil.rmtree(self.json_data['dll_path'])
+        if self.json_data['is_registered']:
+            self.logger.log('Cleaning reg')
+            try:
+                winreg.DeleteKeyEx(winreg.HKEY_LOCAL_MACHINE, self.app.reg_path)
+            except Exception as err:
+                self.logger.error('Failed to clean reg', err)
         for fn in files_to_remove:
             fp = os.path.join(self.json_data['game_path'], fn)
             if not os.path.isfile(fp):
