@@ -49,7 +49,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>0</number>
     </property>
     <property name="elideMode">
      <enum>Qt::ElideNone</enum>
@@ -204,6 +204,22 @@
       </property>
       <property name="text">
        <string>Обзор</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>210</y>
+        <width>480</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Зарегистрировать приложение в параметрах</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
