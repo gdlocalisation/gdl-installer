@@ -146,6 +146,7 @@ class Installer:
             self.ui.goForwardButton.setText('Готово!')
 
     def register_app(self) -> None:
+        self.logger.log('Registering app')
         reg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
         try:
             winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, self.app.reg_path)
@@ -161,7 +162,7 @@ class Installer:
         winreg.SetValueEx(key, 'DisplayName', 0, winreg.REG_SZ, 'Geometry Dash Localisation')
         winreg.SetValueEx(key, 'DisplayVersion', 0, winreg.REG_SZ, '1.0.0')
         winreg.SetValueEx(key, 'URLInfoAbout', 0, winreg.REG_SZ, 'https://www.gdlocalisation.gq/')
-        installer_path = '"' + os.path.join(self.install_game_path, os.path.basename(self.app.spawn_args[-1])) + '"'
+        installer_path = '"' + os.path.join(self.install_game_path, os.path.basename(self.app.exec_script)) + '"'
         if not self.app.is_compiled:
             installer_path = '"' + sys.executable + '" ' + installer_path
         self.logger.log('Installer path', installer_path)
@@ -187,8 +188,8 @@ class Installer:
     def save_settings(self) -> None:
         try:
             shutil.copy(
-                self.app.spawn_args[-1],
-                os.path.join(self.install_game_path, os.path.basename(self.app.spawn_args[-1]))
+                self.app.exec_script,
+                os.path.join(self.install_game_path, os.path.basename(self.app.exec_script))
             )
         except Exception as err:
             self.logger.error('Failed to copy installer', err)
@@ -304,6 +305,7 @@ class Installer:
         )
 
     def go_forward(self) -> None:
+        self.logger.log('Go forward')
         if self.ui.tabs.currentIndex() == 2:
             if self.ui.loaderType.isChecked():
                 if not os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), self.ui.adafpathEdit.text())):
@@ -320,10 +322,12 @@ class Installer:
         self.tab_changed()
 
     def go_back(self) -> None:
+        self.logger.log('Go back')
         self.ui.tabs.setCurrentIndex(self.ui.tabs.currentIndex() - 1)
         self.tab_changed()
 
-    def check_radio_buttons(self, *args: any) -> None:  # noqa
+    def check_radio_buttons(self, *args: any) -> None:
+        self.logger.log('Checking radio buttons', *args)
         self.ui.goForwardButton.setEnabled(True)
         if not self.ui.defaultType.isEnabled() and self.ui.defaultType.isChecked():
             self.ui.defaultType.setChecked(False)
@@ -346,16 +350,18 @@ class Installer:
         path = QtWidgets.QFileDialog.getExistingDirectory(
             self.window, 'Выбор папки с игрой', self.ui.folderpathEdit.text()
         )
+        self.logger.log('Selected install dir', path)
         self.ui.folderpathEdit.setText(path)
         self.check_install_dir()
 
     def load_json(self) -> None:
+        self.logger.log('Downloading JSON')
         url = 'https://github.com/gdlocalisation/gdl-binaries/releases/latest/download/gdl-binaries.json'
         start_time = time.time()
         try:
             resp = requests.get(url)
             if not resp.status_code == 200:
-                raise RuntimeError('Failed to download')
+                raise RuntimeError('Failed to download code 200 != ' + str(resp.status_code))
         except Exception as err:
             self.logger.error('Failed to download JSON', err)
             return self.app.show_error(
@@ -369,6 +375,7 @@ class Installer:
         self.logger.log(f'JSON downloaded [{self.app.round_point(end_time - start_time, 3)}s]')
 
     def set_stylesheet(self, style_name: str) -> None:
+        self.logger.log('Setting stylesheet', style_name)
         f = open(os.path.join(self.app.files_dir, style_name + '.qss'), 'r', encoding=self.app.encoding)
         content = f.read()
         f.close()
