@@ -199,11 +199,13 @@ class Installer:
         )
         if self.installer_data:
             is_default = self.installer_data['is_default']
+            is_registered = self.installer_data['is_registered']
         else:
             is_default = self.ui.defaultType.isChecked()
+            is_registered = self.ui.regappBox.isChecked()
         json_result = {
             'is_default': is_default,
-            'is_registered': self.ui.regappBox.isChecked(),
+            'is_registered': is_registered,
             'dll_path': self.install_path,
             'game_path': self.install_game_path,
             'json_data': self.json_data
@@ -229,14 +231,14 @@ class Installer:
             try:
                 self.app.write_binary(os.path.join(self.install_game_path, 'xinput9_1_0.dll'), files['xinput9_1_0.dll'])
             except Exception as err:
-                self.logger.log('Failed to write xinput', err)
+                self.logger.error('Failed to write xinput', err)
         dll_path = os.path.join(self.install_path, 'GDLocalisation.dll')
         dll_bak_path = dll_path + '.bak'
         if os.path.isfile(dll_bak_path):
             try:
                 os.remove(dll_bak_path)
             except Exception as err:
-                self.logger.log('Failed to remove dll backup', err)
+                self.logger.error('Failed to remove dll backup', err)
         if os.path.isfile(dll_path):
             os.rename(dll_path, dll_bak_path)
         self.app.write_binary(
