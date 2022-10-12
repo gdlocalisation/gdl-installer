@@ -2,7 +2,7 @@ import os
 import subprocess
 
 
-cwd = os.path.dirname(__file__)
+cwd = os.path.dirname(__file__) or os.getcwd()
 
 
 def main() -> None:
