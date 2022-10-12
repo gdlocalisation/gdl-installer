@@ -11,7 +11,6 @@ class Uninstaller:
         self.json_data = json_data
         self.logger = self.app.logger
         self.exit_code = 0
-        self.logger.log('Asking about uninstall')
         if not self.ask_processing():
             return
         self.logger.log('Uninstalling GDL')
@@ -23,6 +22,7 @@ class Uninstaller:
             fn = data['fn']
             backup_fp = os.path.join(self.json_data['game_path'], 'gdl-backup', fn)
             res_fp = os.path.join(self.json_data['game_path'], 'Resources', fn)
+            self.logger.log('Processing', fn)
             if fn.lower().startswith('gdl'):
                 if os.path.isfile(res_fp):
                     os.remove(res_fp)
@@ -38,6 +38,7 @@ class Uninstaller:
         shutil.rmtree(os.path.join(self.json_data['game_path'], 'gdl-backup'))
         dll_fp = os.path.join(self.json_data['dll_path'], 'GDLocalisation.dll')
         files_to_remove = ['gdl_patches.json', 'gdl-icon.ico', 'gdl-installer.json', 'ru_ru.json', 'str_dump6.txt']
+        self.logger.log('Deleting other shit')
         if os.path.isfile(dll_fp):
             os.remove(dll_fp)
         if os.path.isfile(dll_fp + '.bak'):
@@ -58,7 +59,8 @@ class Uninstaller:
             os.remove(fp)
         self.finish_uninstall()
 
-    def finish_uninstall(self) -> None:  # noqa
+    def finish_uninstall(self) -> None:
+        self.logger.log('Uninstallation done!')
         winapi.MessageBoxW(
             0,
             'Geometry Dash Localisation Удалён!',
@@ -68,14 +70,17 @@ class Uninstaller:
         self.delete_installer()
 
     def delete_installer(self) -> None:
-        subprocess.Popen(f'sleep 5 && del "{self.app.spawn_args[-1]}"', shell=True)
+        self.logger.log('Deleting self after 5 seconds')
+        subprocess.Popen(f'sleep 5 && del "{self.app.exec_script}"', shell=True)
         self.exit_code = 0
 
-    def ask_processing(self) -> bool:  # noqa
+    def ask_processing(self) -> bool:
+        self.logger.log('Asking about uninstall')
         msg_result = winapi.MessageBoxW(
             0,
             'Вы уверены, что хотите удалить GDL?',
             'Удаление GDL',
             0x00000004 | 0x00000020 | 0x00000100
         )
+        self.logger.log('User selected', msg_result)
         return msg_result == 6
