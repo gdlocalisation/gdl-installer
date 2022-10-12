@@ -37,7 +37,7 @@ class Uninstaller:
             os.rename(backup_fp, res_fp)
         shutil.rmtree(os.path.join(self.json_data['game_path'], 'gdl-backup'))
         dll_fp = os.path.join(self.json_data['dll_path'], 'GDLocalisation.dll')
-        files_to_remove = ['gdl_patches.json', 'gdl-icon.ico', 'gdl-installer.json', 'ru_ru.json', 'str_dump6.txt']
+        files_to_remove = ['gdl_patches.json', 'gdl-icon.ico', 'gdl-installer.json', 'ru_ru.json']
         self.logger.log('Deleting other shit')
         if os.path.isfile(dll_fp):
             os.remove(dll_fp)

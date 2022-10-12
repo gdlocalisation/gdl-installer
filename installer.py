@@ -223,7 +223,7 @@ class Installer:
             files[data['fn']] = self.binary_data[:data['size']]
             self.binary_data = self.binary_data[data['size']:]
         self.logger.log('Other size 0 is', len(self.binary_data))
-        for fn in ('gdl_patches.json', 'ru_ru.json', 'str_dump6.txt'):
+        for fn in ('gdl_patches.json', 'ru_ru.json'):
             self.app.write_binary(os.path.join(self.install_game_path, fn), files[fn])
         if self.ui.defaultType.isChecked():
             try:
