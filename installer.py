@@ -9,7 +9,7 @@ import wintheme
 import finder
 import threader
 import time
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 from installer_ui import Ui_MainWindow
 
 

@@ -7,7 +7,7 @@ import winapi
 import installer
 import uninstaller
 import logger
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets
 
 
 class App:
