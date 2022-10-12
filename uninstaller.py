@@ -1,4 +1,5 @@
 import os
+import subprocess
 import shutil
 import winreg
 import winapi
@@ -64,6 +65,11 @@ class Uninstaller:
             'Удаление GDL',
             0x00000040
         )
+        self.delete_installer()
+
+    def delete_installer(self) -> None:
+        subprocess.Popen(f'sleep 5 && del "{self.app.spawn_args[-1]}"', shell=True)
+        self.exit_code = 0
 
     def ask_processing(self) -> bool:  # noqa
         msg_result = winapi.MessageBoxW(
