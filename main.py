@@ -37,23 +37,27 @@ class App:
         self.child_app = None
         self.main()
 
-    def read_binary(self, fn: str) -> bytes:  # noqa
+    def read_binary(self, fn: str) -> bytes:
+        self.logger.log('Reading file', fn)
         f = open(fn, 'rb')
         result = f.read()
         f.close()
         return result
 
-    def write_binary(self, fn: str, content: bytes) -> int:  # noqa
+    def write_binary(self, fn: str, content: bytes) -> int:
+        self.logger.log('Writing file', fn)
         f = open(fn, 'wb')
         result = f.write(content)
         f.close()
         return result
 
-    def round_point(self, number: float, count: int = 2) -> None:  # noqa
+    def round_point(self, number: float, count: int = 2) -> None:
+        self.logger.log('Rounding point', number, count)
         count_10 = 10 ** count
         return round(number * count_10) / count_10
 
-    def show_error(self, window: any, caption: str, text: str, cb: any = None) -> QtWidgets.QMessageBox:  # noqa
+    def show_error(self, window: any, caption: str, text: str, cb: any = None) -> QtWidgets.QMessageBox:
+        self.logger.log('Showing error', caption, text)
         box = QtWidgets.QMessageBox(window)
         if self.theme & wintheme.THEME_DARK:
             wintheme.set_window_theme(int(box.winId()), wintheme.THEME_DARK)
@@ -66,7 +70,8 @@ class App:
 
     def show_question(
             self, window: any, caption: str, text: str, yes_cb: any, no_cb: any = None
-    ) -> QtWidgets.QMessageBox:  # noqa
+    ) -> QtWidgets.QMessageBox:
+        self.logger.log('Showing question', caption, text)
         box = QtWidgets.QMessageBox(window)
         if self.theme & wintheme.THEME_DARK:
             wintheme.set_window_theme(int(box.winId()), wintheme.THEME_DARK)
@@ -79,17 +84,20 @@ class App:
         return box
 
     def run_installer(self, json_data: dict = None) -> None:
+        self.logger.log('Running installer')
         self.child_app = installer.Installer(self, json_data)
         self.logger.destroy()
         sys.exit(self.child_app.exit_code)
 
     def run_uninstaller(self, json_data: dict = None) -> None:
+        self.logger.log('Running uninstaller')
         self.child_app = uninstaller.Uninstaller(self, json_data)
         self.logger.destroy()
         sys.exit(self.child_app.exit_code)
 
     def main(self) -> None:
         settings_path = os.path.join(os.path.dirname(self.spawn_args[-1]), 'gdl-installer.json')
+        self.logger.log('Settings path', settings_path)
         if not os.path.isfile(settings_path):
             return self.run_installer()
         f = open(settings_path, 'r', encoding=self.encoding)
@@ -99,6 +107,7 @@ class App:
             return self.run_installer(json_data)
         if sys.argv[-1] == '--remove':
             return self.run_uninstaller(json_data)
+        self.logger.log('Showing msg about install')
         msg_result = winapi.MessageBoxW(
             0,
             'Да - Обновить GDL.\nНет - Удалить GDL.\nОтмена - выйти.',
