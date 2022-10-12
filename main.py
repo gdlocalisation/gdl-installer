@@ -24,15 +24,20 @@ class App:
         self.exec_script = self.spawn_args[-1]
         self.theme = wintheme.get_apps_theme()
         self.reg_path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\GDLocalisation'
-        if False:
-            self.theme = wintheme.THEME_LIGHT  # noqa
+        if os.getenv('GDL_LIGHT_THEME'):
+            self.theme = wintheme.THEME_LIGHT
         self.logger = logger.Logger(self)
         self.logger.log('GDL Log')
         self.logger.log('CWD', self.cwd)
         self.logger.log('Executable', sys.executable)
         self.logger.log('Python', sys.version)
         self.logger.log('Version', sys.version_info)
+        self.logger.log('Encoding', self.encoding)
         self.logger.log('Platform', platform.platform())
+        self.logger.log('Files dir', self.files_dir)
+        self.logger.log('Temp dir', self.temp_dir)
+        self.logger.log('REG Path', self.reg_path)
+        self.logger.log('Spawn args', self.spawn_args)
         self.logger.log('Theme', wintheme.theme_to_string.get(self.theme))
         self.child_app = None
         self.main()
