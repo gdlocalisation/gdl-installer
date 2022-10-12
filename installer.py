@@ -26,6 +26,7 @@ class Installer:
             self.set_stylesheet('Darkeum')
         else:
             self.set_stylesheet('Ubuntu')
+        self.has_failed_download = False
         self.install_game_path = ''
         self.install_path = ''
         self.binary_data = b''
@@ -91,6 +92,8 @@ class Installer:
                         'Тут GDL уже установлен!\nЗапускайте установщик из папки Geometry Dash.',
                         lambda: self.tab_changed(1)
                     )
+            if self.has_failed_download:
+                return
             self.ui.goBackButton.setEnabled(True)
             self.ui.goForwardButton.setText('Установить')
             self.ui.defaultType.setEnabled(not os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), 'adaf-dll')))
@@ -98,13 +101,14 @@ class Installer:
             self.ui.hackType.setEnabled(os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), 'extensions')))
             self.ui.gdhmType.setEnabled(os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), '.GDHM', 'dll')))
             self.check_radio_buttons()
-            if self.installer_data:
-                self.ui.defaultType.setEnabled(False)
-                self.ui.modType.setEnabled(False)
-                self.ui.hackType.setEnabled(False)
-                self.ui.gdhmType.setEnabled(False)
-                self.ui.loaderType.setEnabled(False)
-                self.ui.adafpathEdit.setEnabled(False)
+            if not self.installer_data:
+                return
+            self.ui.defaultType.setEnabled(False)
+            self.ui.modType.setEnabled(False)
+            self.ui.hackType.setEnabled(False)
+            self.ui.gdhmType.setEnabled(False)
+            self.ui.loaderType.setEnabled(False)
+            self.ui.adafpathEdit.setEnabled(False)
         elif tab_id == 3:
             self.ui.goForwardButton.setEnabled(False)
             self.ui.goBackButton.setEnabled(False)
@@ -290,6 +294,7 @@ class Installer:
             thread.start()
             return
         del self.window.binary_data  # noqa
+        self.has_failed_download = True
         self.logger.error('Failed to download bin', chunk.decode(self.app.encoding))
         self.app.show_error(
             self.window,
