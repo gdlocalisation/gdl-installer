@@ -26,7 +26,6 @@ class Installer:
             self.set_stylesheet('Darkeum')
         else:
             self.set_stylesheet('Ubuntu')
-        self.has_failed_download = False
         self.install_game_path = ''
         self.install_path = ''
         self.binary_data = b''
@@ -92,11 +91,10 @@ class Installer:
                         'Тут GDL уже установлен!\nЗапускайте установщик из папки Geometry Dash.',
                         lambda: self.tab_changed(1)
                     )
-            if self.has_failed_download:
-                return
             self.ui.goBackButton.setEnabled(True)
             self.ui.goForwardButton.setText('Установить')
-            self.ui.defaultType.setEnabled(not os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), 'adaf-dll')))
+            default_path = os.path.join(self.ui.folderpathEdit.text(), 'adaf-dll')
+            self.ui.defaultType.setEnabled(not (os.path.isdir(default_path) and os.listdir(default_path)))
             self.ui.modType.setEnabled(os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), 'mods')))
             self.ui.hackType.setEnabled(os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), 'extensions')))
             self.ui.gdhmType.setEnabled(os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), '.GDHM', 'dll')))
@@ -297,7 +295,6 @@ class Installer:
             thread.start()
             return
         del self.window.binary_data  # noqa
-        self.has_failed_download = True
         self.logger.error('Failed to download bin', chunk.decode(self.app.encoding))
         self.app.show_error(
             self.window,
