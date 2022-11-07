@@ -216,7 +216,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Зарегистрировать приложение в параметрах</string>
+       <string>Добавить в параметры</string>
       </property>
       <property name="checked">
        <bool>true</bool>
