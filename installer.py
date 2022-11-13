@@ -1,6 +1,7 @@
 import os
 import sys
 import shutil
+import subprocess
 import json
 import zlib
 import winreg
@@ -67,6 +68,10 @@ class Installer:
         self.ui.loaderType.changeEvent = self.check_radio_buttons
         self.logger.log('Events bound')
 
+    def run_game_installer(self) -> None:
+        subprocess.Popen(os.path.join(self.ui.folderpathEdit.text(), 'GDL_Installer.exe'))
+        sys.exit(0)
+
     def tab_changed(self, to_change: int = -1) -> None:
         if to_change >= 0:
             self.ui.tabs.setCurrentIndex(to_change)
@@ -85,10 +90,11 @@ class Installer:
             if not self.installer_data:
                 check_fn = os.path.join(self.ui.folderpathEdit.text(), 'gdl-installer.json')
                 if os.path.isfile(check_fn):
-                    self.app.show_error(
+                    self.app.show_question(
                         self.window,
                         'Ошибка',
-                        'Тут GDL уже установлен!\nЗапускайте установщик из папки Geometry Dash.',
+                        'Тут GDL уже установлен!\nЗапустить установщик из папки с игрой?',
+                        self.run_game_installer,
                         lambda: self.tab_changed(1)
                     )
             self.ui.goBackButton.setEnabled(True)
