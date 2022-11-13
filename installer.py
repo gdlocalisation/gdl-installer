@@ -68,7 +68,7 @@ class Installer:
         self.ui.loaderType.changeEvent = self.check_radio_buttons
         self.logger.log('Events bound')
 
-    def run_game_installer(self) -> None:
+    def run_game_installer_and_exit(self) -> None:
         subprocess.Popen(os.path.join(self.ui.folderpathEdit.text(), 'GDL_Installer.exe'))
         sys.exit(0)
 
@@ -90,12 +90,12 @@ class Installer:
             if not self.installer_data:
                 check_fn = os.path.join(self.ui.folderpathEdit.text(), 'gdl-installer.json')
                 if os.path.isfile(check_fn):
+                    self.tab_changed(1)
                     self.app.show_question(
                         self.window,
                         'Ошибка',
                         'Тут GDL уже установлен!\nЗапустить установщик из папки с игрой?',
-                        self.run_game_installer,
-                        lambda: self.tab_changed(1)
+                        self.run_game_installer_and_exit
                     )
             self.ui.goBackButton.setEnabled(True)
             self.ui.goForwardButton.setText('Установить')
