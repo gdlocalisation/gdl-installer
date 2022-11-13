@@ -115,7 +115,7 @@ class App:
         self.logger.log('Showing msg about install')
         msg_result = winapi.MessageBoxW(
             0,
-            'Да - Обновить GDL.\nНет - Удалить GDL.\nОтмена - выйти.',
+            'Да - Обновить GDL.\nНет - Удалить GDL.\nОтмена - Выйти.',
             'Изменение GDL',
             0x00000003 | 0x00000020
         )
