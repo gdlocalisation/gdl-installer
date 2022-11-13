@@ -322,11 +322,29 @@ class Installer:
                     )
                     return
         if self.ui.tabs.currentIndex() == 4:
+            if self.ui.siteBox.isChecked():
+                winapi.ShellExecuteW(
+                    self.hwnd,
+                    None,
+                    'https://www.gdlocalisation.gq/',
+                    None,
+                    None,
+                    0x05
+                )
             if self.ui.githubBox.isChecked():
                 winapi.ShellExecuteW(
                     self.hwnd,
                     None,
                     'https://github.com/gdlocalisation',
+                    None,
+                    None,
+                    0x05
+                )
+            if self.ui.discordBox.isChecked():
+                winapi.ShellExecuteW(
+                    self.hwnd,
+                    None,
+                    'https://discord.gg/CScsGU3N6M',
                     None,
                     None,
                     0x05
