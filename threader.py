@@ -44,7 +44,7 @@ class Unzipper(QtCore.QObject):
                 f = open(dst_fn, 'wb')
                 f.write(content)
                 f.close()
-                QtCore.QThread.msleep(50)
+                QtCore.QThread.msleep(20)
                 self.progress.emit(0, str(len(self.bin_data)))
             self.progress.emit(1, 'OK!')
         except Exception as err:

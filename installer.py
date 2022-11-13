@@ -7,9 +7,10 @@ import zlib
 import winreg
 import requests
 import wintheme
+import time
 import finder
 import threader
-import time
+import winapi
 from PyQt5 import QtCore, QtWidgets
 from installer_ui import Ui_MainWindow
 
@@ -321,6 +322,15 @@ class Installer:
                     )
                     return
         if self.ui.tabs.currentIndex() == 4:
+            if self.ui.githubBox.isChecked():
+                winapi.ShellExecuteW(
+                    self.hwnd,
+                    None,
+                    'https://github.com/gdlocalisation',
+                    None,
+                    None,
+                    0x05
+                )
             self.window.close()
             return
         self.ui.tabs.setCurrentIndex(self.ui.tabs.currentIndex() + 1)

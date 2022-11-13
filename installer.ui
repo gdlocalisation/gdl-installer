@@ -481,7 +481,7 @@
        <rect>
         <x>10</x>
         <y>60</y>
-        <width>451</width>
+        <width>450</width>
         <height>20</height>
        </rect>
       </property>
@@ -502,7 +502,7 @@
        <rect>
         <x>10</x>
         <y>90</y>
-        <width>451</width>
+        <width>450</width>
         <height>20</height>
        </rect>
       </property>
@@ -515,6 +515,27 @@
        <string>Нажмите &quot;Готово&quot; для выхода из программы установки</string>
       </property>
       <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="githubBox">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>130</y>
+        <width>450</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Посетить наш GitHub</string>
+      </property>
+      <property name="checked">
        <bool>true</bool>
       </property>
      </widget>
