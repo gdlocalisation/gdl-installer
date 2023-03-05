@@ -367,7 +367,7 @@ class Installer:
             self.ui.loaderType.setChecked(True)
 
     def check_install_dir(self) -> None:
-        install_dir = self.ui.folderpathEdit.text()
+        install_dir = self.ui.folderpathEdit.text().strip()
         self.logger.log('Install dir check', install_dir)
         if not os.path.isdir(install_dir):
             self.logger.log('Install dir check failed')
