@@ -216,7 +216,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Добавить GDL в параметры</string>
+       <string>Добавить GDL как приложение в параметры</string>
       </property>
       <property name="checked">
        <bool>true</bool>
