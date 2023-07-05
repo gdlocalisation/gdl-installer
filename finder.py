@@ -32,7 +32,10 @@ class SteamFinder:
             reg_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, reg_path, 0, winreg.KEY_READ)
         except FileNotFoundError:
             return ''
-        value, regtype = winreg.QueryValueEx(reg_key, 'InstallPath')
+        try:
+            value, regtype = winreg.QueryValueEx(reg_key, 'InstallPath')
+        except (FileNotFoundError, TypeError, IndexError, AttributeError):
+            return ''
         winreg.CloseKey(reg_key)
         return value.strip()
 
