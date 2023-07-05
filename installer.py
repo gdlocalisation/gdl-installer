@@ -232,7 +232,7 @@ class Installer:
         self.logger.log('Other size 0 is', len(self.binary_data))
         for fn in ('gdl_patches.json', 'ru_ru.json', 'ru_ru_locations.json', 'minhook.x32.dll'):
             self.app.write_binary(os.path.join(self.install_game_path, fn), files[fn])
-        if self.ui.defaultType.isChecked():
+        if not self.installer_data and self.ui.defaultType.isChecked():  # Please work
             try:
                 self.app.write_binary(os.path.join(self.install_game_path, 'xinput9_1_0.dll'), files['xinput9_1_0.dll'])
             except Exception as err:
