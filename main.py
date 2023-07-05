@@ -93,7 +93,8 @@ class App:
     def show_error(self, window: any, caption: str, text: str, cb: any = None) -> QtWidgets.QMessageBox:
         self.logger.log('Showing error', caption, text)
         box = QtWidgets.QMessageBox(window)
-        self.apply_dark(int(box.winId()))
+        if self.is_dark:
+            self.apply_dark(int(box.winId()))
         box.setIcon(box.Icon.Critical)
         box.setWindowTitle(caption)
         box.setText(text)
@@ -106,7 +107,8 @@ class App:
     ) -> QtWidgets.QMessageBox:
         self.logger.log('Showing question', caption, text)
         box = QtWidgets.QMessageBox(window)
-        self.apply_dark(int(box.winId()))
+        if self.is_dark:
+            self.apply_dark(int(box.winId()))
         box.setIcon(box.Icon.Question)
         box.setWindowTitle(caption)
         box.setText(text)
