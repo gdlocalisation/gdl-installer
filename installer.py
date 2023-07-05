@@ -6,7 +6,6 @@ import json
 import zlib
 import winreg
 import requests
-import wintheme
 import time
 import finder
 import threader
@@ -23,8 +22,9 @@ class Installer:
         self.application = QtWidgets.QApplication(sys.argv)
         self.window = QtWidgets.QMainWindow()
         self.hwnd = int(self.window.winId())
-        if self.app.theme & wintheme.THEME_DARK:
-            wintheme.set_window_theme(self.hwnd, wintheme.THEME_DARK)
+        self.app.check_dark_theme()
+        if self.app.is_dark:
+            self.app.apply_dark(self.hwnd)
             self.set_stylesheet('Darkeum')
         else:
             self.set_stylesheet('Ubuntu')

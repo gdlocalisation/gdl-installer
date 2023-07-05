@@ -1,13 +1,15 @@
 import os
 import sys
+import ctypes
 import platform
 import json
-import wintheme
 import winapi
 import installer
 import uninstaller
 import logger
 from PyQt5 import QtWidgets
+if sys.platform == 'win32':
+    from ctypes import wintypes
 
 
 class App:
@@ -22,10 +24,42 @@ class App:
         self.spawn_args = [sys.executable] if self.is_compiled else [sys.executable, __file__]
         self.spawn_str = '"' + '"'.join(self.spawn_args) + '"'
         self.exec_script = self.spawn_args[-1]
-        self.theme = wintheme.get_apps_theme()
+        if sys.platform == 'win32':
+            try:
+                self.ux_theme = ctypes.windll.uxtheme
+                try:
+                    self.should_use_dark_mode = self.ux_theme.__getitem__(132)
+                    self.should_use_dark_mode.argtypes = ()
+                    self.should_use_dark_mode.restype = ctypes.c_byte
+                    print(self.should_use_dark_mode())
+                except AttributeError:
+                    self.should_use_dark_mode = None
+            except FileNotFoundError:
+                self.ux_theme = None
+                self.should_use_dark_mode = None
+            try:
+                self.dwm_api = ctypes.windll.dwmapi
+                try:
+                    self.dwm_set_attribute = self.dwm_api.DwmSetWindowAttribute
+                    self.dwm_set_attribute.argtypes = (
+                        wintypes.HWND,
+                        wintypes.DWORD,
+                        wintypes.LPCVOID,
+                        wintypes.DWORD
+                    )
+                    self.dwm_set_attribute.restype = wintypes.LONG
+                except AttributeError:
+                    self.dwm_set_attribute = None
+            except FileNotFoundError:
+                self.dwm_api = None
+                self.dwm_set_attribute = None
+        else:
+            self.ux_theme = None
+            self.dwm_api = None
+            self.should_use_dark_mode = None
+            self.dwm_set_attribute = None
+        self.is_dark = False
         self.reg_path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\GDLocalisation'
-        if os.getenv('GDL_LIGHT_THEME'):
-            self.theme = wintheme.THEME_LIGHT
         self.logger = logger.Logger(self)
         self.logger.log('GDL Log')
         self.logger.log('CWD', self.cwd)
@@ -38,9 +72,28 @@ class App:
         self.logger.log('Temp dir', self.temp_dir)
         self.logger.log('REG Path', self.reg_path)
         self.logger.log('Spawn args', self.spawn_args)
-        self.logger.log('Theme', wintheme.theme_to_string.get(self.theme))
+        self.logger.log('Dark Theme', self.is_dark)
         self.child_app = None
         self.main()
+
+    def check_dark_theme(self) -> None:
+        if not sys.platform == 'win32':
+            return
+        if os.getenv('GDL_ENABLE_DARK_THEME'):
+            self.is_dark = os.environ['GDL_ENABLE_DARK_THEME'] == '1'
+        if not self.ux_theme or not self.should_use_dark_mode:
+            return self.check_dark_theme_reg()
+        self.is_dark = bool(self.should_use_dark_mode())
+
+    def check_dark_theme_reg(self) -> None:
+        if not sys.platform == 'win32':
+            return
+
+    def apply_dark(self, hwnd: int) -> None:
+        if not hwnd or not self.dwm_api or not self.dwm_set_attribute:
+            return
+        self.logger.log(f'Dark Theme for {hwnd}', not self.dwm_set_attribute(hwnd, 20, ctypes.c_buffer(b'\0\0\0\1'), 4))
+        self.logger.log(f'Dark Theme for {hwnd}', not self.dwm_set_attribute(hwnd, 20, ctypes.c_buffer(b'\0\0\0\1'), 4))
 
     def read_binary(self, fn: str) -> bytes:
         self.logger.log('Reading file', fn)
@@ -64,8 +117,7 @@ class App:
     def show_error(self, window: any, caption: str, text: str, cb: any = None) -> QtWidgets.QMessageBox:
         self.logger.log('Showing error', caption, text)
         box = QtWidgets.QMessageBox(window)
-        if self.theme & wintheme.THEME_DARK:
-            wintheme.set_window_theme(int(box.winId()), wintheme.THEME_DARK)
+        self.apply_dark(int(box.winId()))
         box.setIcon(box.Icon.Critical)
         box.setWindowTitle(caption)
         box.setText(text)
@@ -78,8 +130,7 @@ class App:
     ) -> QtWidgets.QMessageBox:
         self.logger.log('Showing question', caption, text)
         box = QtWidgets.QMessageBox(window)
-        if self.theme & wintheme.THEME_DARK:
-            wintheme.set_window_theme(int(box.winId()), wintheme.THEME_DARK)
+        self.apply_dark(int(box.winId()))
         box.setIcon(box.Icon.Question)
         box.setWindowTitle(caption)
         box.setText(text)
