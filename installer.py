@@ -41,8 +41,10 @@ class Installer:
         self.exit_code = self.application.exec_()
 
     def after_setup_ui(self) -> None:
+        self.window.setWindowFlag(QtCore.Qt.WindowType.CustomizeWindowHint, True)
         self.window.setWindowFlags(
-            QtCore.Qt.WindowType.WindowCloseButtonHint | QtCore.Qt.WindowType.WindowMinimizeButtonHint
+            # QtCore.Qt.WindowType.WindowCloseButtonHint |
+            QtCore.Qt.WindowType.WindowMinimizeButtonHint
         )
         self.ui.tabs.setCurrentIndex(0)
         self.ui.tabs.tabBar().setEnabled(not self.app.is_compiled)
