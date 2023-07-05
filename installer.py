@@ -255,9 +255,6 @@ class Installer:
         if status == 0:
             self.ui.unpackBar.setValue(len(self.binary_data) - int(content))
             return
-        # self.window.unzip_thread.quit()  # noqa
-        # self.window.data_unzipper.deleteLater()  # noqa
-        # self.window.unzip_thread.deleteLater()  # noqa
         if status == 1:
             self.binary_data = self.binary_data[self.json_data['gdl-assets-size']:]
             self.logger.log('Data Unzipped')
@@ -276,9 +273,6 @@ class Installer:
             self.window.binary_data += chunk  # noqa
             self.ui.downloadBar.setValue(len(self.window.binary_data))  # noqa
             return
-        # self.window.download_thread.wait()  # noqa
-        # self.window.data_downloader.deleteLater()  # noqa
-        # self.window.download_thread.deleteLater()  # noqa
         if status == 1:
             self.binary_data = zlib.decompress(self.window.binary_data, 0xF | 0x20) # noqa
             del self.window.binary_data  # noqa

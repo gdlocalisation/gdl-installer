@@ -26,7 +26,7 @@ except (FileNotFoundError, AttributeError):
 
 try:
     ux_theme = ctypes.windll.uxtheme
-    ShouldUseDarkMode = ux_theme.__getitem__(132)
+    ShouldUseDarkMode = ux_theme.__getitem__(132)  # Do we need to check Windows version before? (fuck M$)
     ShouldUseDarkMode.argtypes = ()
     ShouldUseDarkMode.restype = ctypes.c_byte
 except (FileNotFoundError, AttributeError):
