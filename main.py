@@ -8,8 +8,6 @@ import installer
 import uninstaller
 import logger
 from PyQt5 import QtWidgets
-if sys.platform == 'win32':
-    from ctypes import wintypes
 
 
 class App:
@@ -24,29 +22,6 @@ class App:
         self.spawn_args = [sys.executable] if self.is_compiled else [sys.executable, __file__]
         self.spawn_str = '"' + '"'.join(self.spawn_args) + '"'
         self.exec_script = self.spawn_args[-1]
-        if sys.platform == 'win32':
-            try:
-                ux_theme = ctypes.windll.uxtheme
-                self.should_use_dark_mode = ux_theme.__getitem__(132)
-                self.should_use_dark_mode.argtypes = ()
-                self.should_use_dark_mode.restype = ctypes.c_byte
-            except (FileNotFoundError, AttributeError):
-                self.should_use_dark_mode = None
-            try:
-                dwm_api = ctypes.windll.dwmapi
-                self.dwm_set_attribute = dwm_api.DwmSetWindowAttribute
-                self.dwm_set_attribute.argtypes = (
-                    wintypes.HWND,
-                    wintypes.DWORD,
-                    wintypes.LPCVOID,
-                    wintypes.DWORD
-                )
-                self.dwm_set_attribute.restype = wintypes.LONG
-            except (FileNotFoundError, AttributeError):
-                self.dwm_set_attribute = None
-        else:
-            self.should_use_dark_mode = None
-            self.dwm_set_attribute = None
         self.is_dark = False
         self.reg_path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\GDLocalisation'
         self.logger = logger.Logger(self)
@@ -66,23 +41,24 @@ class App:
         self.main()
 
     def check_dark_theme(self) -> None:
-        if not sys.platform == 'win32':
-            return
         if os.getenv('GDL_ENABLE_DARK_THEME'):
             self.is_dark = os.environ['GDL_ENABLE_DARK_THEME'] == '1'
-        if not self.should_use_dark_mode:
+        if not winapi.ShouldUseDarkMode():
             return self.check_dark_theme_reg()
-        self.is_dark = bool(self.should_use_dark_mode())
+        self.is_dark = bool(winapi.ShouldUseDarkMode())
 
     def check_dark_theme_reg(self) -> None:
-        if not sys.platform == 'win32':
-            return
+        pass
 
     def apply_dark(self, hwnd: int) -> None:
-        if not hwnd or not self.dwm_set_attribute:
+        if not hwnd or not winapi.DwmSetWindowAttribute:
             return
-        self.logger.log(f'Dark Theme for {hwnd}', not self.dwm_set_attribute(hwnd, 20, ctypes.c_buffer(b'\0\0\0\1'), 4))
-        self.logger.log(f'Dark Theme for {hwnd}', not self.dwm_set_attribute(hwnd, 20, ctypes.c_buffer(b'\0\0\0\1'), 4))
+        self.logger.log(
+            f'Dark Theme 1 for hwnd {hwnd}', not winapi.DwmSetWindowAttribute(hwnd, 19, ctypes.c_buffer(b'\0\0\0\1'), 4)
+        )
+        self.logger.log(
+            f'Dark Theme 2 for hwnd {hwnd}', not winapi.DwmSetWindowAttribute(hwnd, 20, ctypes.c_buffer(b'\0\0\0\1'), 4)
+        )
 
     def read_binary(self, fn: str) -> bytes:
         self.logger.log('Reading file', fn)
