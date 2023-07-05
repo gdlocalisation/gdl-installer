@@ -4,7 +4,7 @@ import requests
 from PyQt5 import QtCore
 
 
-class Downloader(QtCore.QObject):
+class Downloader(QtCore.QThread):
     url = ''
     encoding = 'utf-8'
     chunk_size = 1024
@@ -22,7 +22,7 @@ class Downloader(QtCore.QObject):
             self.progress.emit(2, str(err).encode(self.encoding))
 
 
-class Unzipper(QtCore.QObject):
+class Unzipper(QtCore.QThread):
     encoding = 'utf-8'
     base_dir = ''
     json_data = {}

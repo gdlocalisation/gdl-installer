@@ -55,7 +55,7 @@ class Installer:
         else:
             self.ui.folderpathEdit.setText(finder.SteamFinder(self.app).game_dir)
         if not self.app.is_compiled:
-            self.ui.folderpathEdit.setText('d:/games/gd_test')
+            self.ui.folderpathEdit.setText('e:/games/gd_test')
         self.bind_events()
 
     def bind_events(self) -> None:
@@ -135,16 +135,13 @@ class Installer:
             self.ui.downloadBar.setMaximum(self.json_data['size'])
             self.ui.unpackBar.setMaximum(self.json_data['gdl-assets-size'])
             self.logger.log('Installing to', self.install_path)
-            self.window.download_thread = thread = QtCore.QThread()
-            self.window.data_downloader = loader = threader.Downloader()
+            self.window.download_thread = loader = threader.Downloader()
             self.window.binary_data = b''
             loader.url = 'https://github.com/gdlocalisation/gdl-binaries/releases/latest/download/gdl-binaries.bin.gzip'
             loader.encoding = self.app.encoding
             loader.chunk_size = 1024 * 32 if self.app.is_compiled else 1024 * 128
-            loader.moveToThread(thread)
             loader.progress.connect(self.download_progress)
-            thread.started.connect(loader.run)
-            thread.start()
+            loader.start()
         elif tab_id == 4:
             self.ui.goForwardButton.setEnabled(True)
             self.ui.goBackButton.setEnabled(False)
@@ -258,9 +255,9 @@ class Installer:
         if status == 0:
             self.ui.unpackBar.setValue(len(self.binary_data) - int(content))
             return
-        self.window.unzip_thread.quit()  # noqa
-        self.window.data_unzipper.deleteLater()  # noqa
-        self.window.unzip_thread.deleteLater()  # noqa
+        # self.window.unzip_thread.quit()  # noqa
+        # self.window.data_unzipper.deleteLater()  # noqa
+        # self.window.unzip_thread.deleteLater()  # noqa
         if status == 1:
             self.binary_data = self.binary_data[self.json_data['gdl-assets-size']:]
             self.logger.log('Data Unzipped')
@@ -279,9 +276,9 @@ class Installer:
             self.window.binary_data += chunk  # noqa
             self.ui.downloadBar.setValue(len(self.window.binary_data))  # noqa
             return
-        self.window.download_thread.quit()  # noqa
-        self.window.data_downloader.deleteLater()  # noqa
-        self.window.download_thread.deleteLater()  # noqa
+        # self.window.download_thread.wait()  # noqa
+        # self.window.data_downloader.deleteLater()  # noqa
+        # self.window.download_thread.deleteLater()  # noqa
         if status == 1:
             self.binary_data = zlib.decompress(self.window.binary_data, 0xF | 0x20) # noqa
             del self.window.binary_data  # noqa
@@ -291,16 +288,14 @@ class Installer:
                 os.mkdir(backup_path)
                 self.logger.log('Backup dir created')
             self.logger.log('Unzipping to', self.install_game_path)
-            self.window.unzip_thread = thread = QtCore.QThread()
-            self.window.data_unzipper = unzipper = threader.Unzipper()
+            self.window.unzip_thread = unzipper = threader.Unzipper()
             unzipper.encoding = self.app.encoding
             unzipper.base_dir = self.install_game_path
             unzipper.json_data = self.json_data['gdl-assets']
             unzipper.bin_data = self.binary_data
-            unzipper.moveToThread(thread)
             unzipper.progress.connect(self.unzip_progress)
-            thread.started.connect(unzipper.run)
-            thread.start()
+            # unzipper.started.connect(unzipper.run)
+            unzipper.start()
             return
         del self.window.binary_data  # noqa
         self.logger.error('Failed to download bin', chunk.decode(self.app.encoding))
