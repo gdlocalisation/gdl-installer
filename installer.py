@@ -290,7 +290,6 @@ class Installer:
             unzipper.json_data = self.json_data['gdl-assets']
             unzipper.bin_data = self.binary_data
             unzipper.progress.connect(self.unzip_progress)
-            # unzipper.started.connect(unzipper.run)
             unzipper.start()
             return
         del self.window.binary_data  # noqa
