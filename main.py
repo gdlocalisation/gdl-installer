@@ -26,36 +26,25 @@ class App:
         self.exec_script = self.spawn_args[-1]
         if sys.platform == 'win32':
             try:
-                self.ux_theme = ctypes.windll.uxtheme
-                try:
-                    self.should_use_dark_mode = self.ux_theme.__getitem__(132)
-                    self.should_use_dark_mode.argtypes = ()
-                    self.should_use_dark_mode.restype = ctypes.c_byte
-                    print(self.should_use_dark_mode())
-                except AttributeError:
-                    self.should_use_dark_mode = None
-            except FileNotFoundError:
-                self.ux_theme = None
+                ux_theme = ctypes.windll.uxtheme
+                self.should_use_dark_mode = ux_theme.__getitem__(132)
+                self.should_use_dark_mode.argtypes = ()
+                self.should_use_dark_mode.restype = ctypes.c_byte
+            except (FileNotFoundError, AttributeError):
                 self.should_use_dark_mode = None
             try:
-                self.dwm_api = ctypes.windll.dwmapi
-                try:
-                    self.dwm_set_attribute = self.dwm_api.DwmSetWindowAttribute
-                    self.dwm_set_attribute.argtypes = (
-                        wintypes.HWND,
-                        wintypes.DWORD,
-                        wintypes.LPCVOID,
-                        wintypes.DWORD
-                    )
-                    self.dwm_set_attribute.restype = wintypes.LONG
-                except AttributeError:
-                    self.dwm_set_attribute = None
-            except FileNotFoundError:
-                self.dwm_api = None
+                dwm_api = ctypes.windll.dwmapi
+                self.dwm_set_attribute = dwm_api.DwmSetWindowAttribute
+                self.dwm_set_attribute.argtypes = (
+                    wintypes.HWND,
+                    wintypes.DWORD,
+                    wintypes.LPCVOID,
+                    wintypes.DWORD
+                )
+                self.dwm_set_attribute.restype = wintypes.LONG
+            except (FileNotFoundError, AttributeError):
                 self.dwm_set_attribute = None
         else:
-            self.ux_theme = None
-            self.dwm_api = None
             self.should_use_dark_mode = None
             self.dwm_set_attribute = None
         self.is_dark = False
@@ -81,7 +70,7 @@ class App:
             return
         if os.getenv('GDL_ENABLE_DARK_THEME'):
             self.is_dark = os.environ['GDL_ENABLE_DARK_THEME'] == '1'
-        if not self.ux_theme or not self.should_use_dark_mode:
+        if not self.should_use_dark_mode:
             return self.check_dark_theme_reg()
         self.is_dark = bool(self.should_use_dark_mode())
 
@@ -90,7 +79,7 @@ class App:
             return
 
     def apply_dark(self, hwnd: int) -> None:
-        if not hwnd or not self.dwm_api or not self.dwm_set_attribute:
+        if not hwnd or not self.dwm_set_attribute:
             return
         self.logger.log(f'Dark Theme for {hwnd}', not self.dwm_set_attribute(hwnd, 20, ctypes.c_buffer(b'\0\0\0\1'), 4))
         self.logger.log(f'Dark Theme for {hwnd}', not self.dwm_set_attribute(hwnd, 20, ctypes.c_buffer(b'\0\0\0\1'), 4))
