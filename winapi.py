@@ -1,3 +1,4 @@
+import platform
 import ctypes
 from ctypes import wintypes
 
@@ -25,8 +26,10 @@ except (FileNotFoundError, AttributeError):
     ShellExecuteW = None
 
 try:
+    if int(platform.version().split('.')[-1]) < 17763:  # noqa fuck Micro$oft fuck Micro$oft fuck Micro$oft fuck
+        raise FileNotFoundError('FUCK MICROSOFT DUDE WINDOWS IS PEACE OF SHIT')
     ux_theme = ctypes.windll.uxtheme
-    ShouldUseDarkMode = ux_theme.__getitem__(132)  # Do we need to check Windows version before? (fuck M$)
+    ShouldUseDarkMode = ux_theme.__getitem__(132)
     ShouldUseDarkMode.argtypes = ()
     ShouldUseDarkMode.restype = ctypes.c_byte
 except (FileNotFoundError, AttributeError):
