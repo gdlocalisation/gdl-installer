@@ -3,6 +3,7 @@ import sys
 import ctypes
 import platform
 import json
+import winreg
 import winapi
 import installer
 import uninstaller
@@ -43,12 +44,23 @@ class App:
     def check_dark_theme(self) -> None:
         if os.getenv('GDL_ENABLE_DARK_THEME'):
             self.is_dark = os.environ['GDL_ENABLE_DARK_THEME'] == '1'
-        if not winapi.ShouldUseDarkMode():
+            return
+        if not winapi.ShouldUseDarkMode:
             return self.check_dark_theme_reg()
         self.is_dark = bool(winapi.ShouldUseDarkMode())
 
     def check_dark_theme_reg(self) -> None:
-        pass
+        try:
+            key = winreg.OpenKeyEx(
+                winreg.HKEY_CURRENT_USER, 'Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize'
+            )
+        except FileNotFoundError:
+            return
+        try:
+            self.is_dark = not winreg.QueryValueEx(key, 'AppsUseLightTheme')[0]
+        except (FileNotFoundError, TypeError, IndexError, AttributeError):
+            pass
+        winreg.CloseKey(key)
 
     def apply_dark(self, hwnd: int) -> None:
         if not hwnd or not winapi.DwmSetWindowAttribute:
