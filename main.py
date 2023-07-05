@@ -37,7 +37,6 @@ class App:
         self.logger.log('Temp dir', self.temp_dir)
         self.logger.log('REG Path', self.reg_path)
         self.logger.log('Spawn args', self.spawn_args)
-        self.logger.log('Dark Theme', self.is_dark)
         self.child_app = None
         self.main()
 
