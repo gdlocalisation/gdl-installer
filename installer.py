@@ -316,7 +316,7 @@ class Installer:
                 winapi.ShellExecuteW(
                     self.hwnd,
                     None,
-                    'https://www.gdlocalisation.gq/',
+                    'https://www.gdlocalisation.uk/',
                     None,
                     None,
                     0x05
