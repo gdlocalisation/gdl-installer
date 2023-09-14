@@ -56,7 +56,7 @@ class Installer:
             self.ui.regappBox.setEnabled(False)
         else:
             self.ui.folderpathEdit.setText(
-                finder.SteamFinder(self.app).game_dir or finder.ProcessFinder(self.app).game_dir
+                finder.ProcessFinder(self.app).game_dir or finder.SteamFinder(self.app).game_dir
             )
         if not self.app.is_compiled:
             self.ui.folderpathEdit.setText('e:/games/gd_test')
@@ -361,7 +361,7 @@ class Installer:
 
     def check_install_dir(self) -> None:
         install_dir = self.ui.folderpathEdit.text().strip()
-        self.logger.log('Install dir check', install_dir)
+        self.logger.log('Checking install dir', install_dir)
         if not os.path.isdir(install_dir):
             self.logger.log('Install dir check failed')
             return self.ui.goForwardButton.setEnabled(False)
