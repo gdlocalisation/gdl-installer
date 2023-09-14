@@ -129,6 +129,16 @@ class App:
         self.logger.destroy()
         sys.exit(self.child_app.exit_code)
 
+    def is_gd_path(self, path: str) -> bool:
+        counter = 0
+        try:
+            for fn in os.listdir(path):
+                if fn.lower() in ('fmod.dll', 'libcocos2d.dll', 'libextensions.dll', 'sqlite3.dll', 'glew32.dll'):
+                    counter += 1
+        except Exception as _err:
+            self.logger.error(f'Failed to check is path {path} for gd {_err}')
+        return counter > 3
+
     def main(self) -> None:
         settings_path = os.path.join(os.path.dirname(self.spawn_args[-1]), 'gdl-installer.json')
         self.logger.log('Settings path', settings_path)

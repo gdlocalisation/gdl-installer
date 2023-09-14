@@ -365,12 +365,9 @@ class Installer:
         if not os.path.isdir(install_dir):
             self.logger.log('Install dir check failed')
             return self.ui.goForwardButton.setEnabled(False)
-        counter = 0
-        for fn in os.listdir(install_dir):
-            if fn.lower() in ('fmod.dll', 'libcocos2d.dll', 'libextensions.dll', 'sqlite3.dll', 'glew32.dll'):
-                counter += 1
-        self.logger.log('Install dir check', counter, counter > 3)
-        self.ui.goForwardButton.setEnabled(counter > 3)
+        is_gd = self.app.is_gd_path(install_dir)
+        self.logger.log('Install dir check', is_gd)
+        self.ui.goForwardButton.setEnabled(is_gd)
 
     def select_install_dir(self) -> None:
         path = QtWidgets.QFileDialog.getExistingDirectory(
