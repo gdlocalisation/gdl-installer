@@ -1,5 +1,54 @@
+import ctypes
 import os
 import winreg
+import winapi
+
+
+class ProcessFinder:
+    def __init__(self, app: any) -> None:
+        self.app = app
+        self.logger = app.logger
+        self.game_dir = ''
+        self.main()
+        self.logger.log('-----------------------------------------------\n', self.game_dir)
+
+    def is_gd_process(self, process_name: str) -> bool:
+        print(process_name)
+        return False
+
+    def main(self) -> None:
+        return
+        if not winapi.CreateToolhelp32Snapshot or not winapi.Process32FirstW or not winapi.Process32FirstW:
+            self.logger.log('Failed to import process enumeration functions')
+            return
+        snap = winapi.CreateToolhelp32Snapshot(0x00000002, 0)  # For Process
+        if not snap or snap == -1:
+            self.logger.error('Failed to create process snapshot')
+            return
+        pe32 = winapi.PROCESSENTRY32W()
+        pe32.dwSize = ctypes.sizeof(pe32)
+        gd_path = ''
+        if winapi.Process32FirstW(snap, pe32):
+            if self.is_gd_process(pe32.szExeFile):
+                gd_path = pe32.szExeFile
+            else:
+                while winapi.Process32NextW(snap, pe32):
+                    if self.is_gd_process(pe32.szExeFile):
+                        gd_path = pe32.szExeFile
+                        break
+                if not winapi.GetLastError() == 18:  # No More Files
+                    self.logger.error('Failed to enumerate process')
+        elif not winapi.GetLastError() == 18:
+            self.logger.error('Failed to enumerate the first process')
+        if gd_path:
+            self.game_dir = os.path.dirname(gd_path)
+        else:
+            self.logger.log('Failed to find geometry dash process')
+        if not winapi.CloseHandle:
+            self.logger.error('Failed to load CloseHandle, a little memory leak is here')
+            return
+        if not winapi.CloseHandle(snap):
+            self.logger.error('Failed to close process snapshot')
 
 
 class SteamFinder:

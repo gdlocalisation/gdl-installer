@@ -55,7 +55,9 @@ class Installer:
             self.ui.folderpathButton.setEnabled(False)
             self.ui.regappBox.setEnabled(False)
         else:
-            self.ui.folderpathEdit.setText(finder.SteamFinder(self.app).game_dir)
+            self.ui.folderpathEdit.setText(
+                finder.SteamFinder(self.app).game_dir or finder.ProcessFinder(self.app).game_dir
+            )
         if not self.app.is_compiled:
             self.ui.folderpathEdit.setText('e:/games/gd_test')
         self.bind_events()
