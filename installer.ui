@@ -92,7 +92,7 @@
         <x>180</x>
         <y>10</y>
         <width>310</width>
-        <height>51</height>
+        <height>91</height>
        </rect>
       </property>
       <property name="font">
@@ -103,6 +103,9 @@
       </property>
       <property name="text">
        <string>Вас приветствует мастер установки русификатора для Geometry Dash!</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
