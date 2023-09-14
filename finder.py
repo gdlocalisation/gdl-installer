@@ -30,7 +30,7 @@ class ProcessFinder:
                     self.game_dir = proc_dir
                     self.logger.log('Process dir found', self.game_dir)
             else:
-                self.logger.error('Failed to get process with pid', pid)
+                self.logger.error('Failed to get process path with pid', pid)
         except Exception as _err:
             self.logger.error(f'Failed to get process path ({_err})')
         if not winapi.CloseHandle or not winapi.CloseHandle(proc):
