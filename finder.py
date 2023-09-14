@@ -32,7 +32,7 @@ class ProcessFinder:
             else:
                 self.logger.error('Failed to get process path with pid', pid)
         except Exception as _err:
-            self.logger.error(f'Failed to get process path ({_err})')
+            self.logger.error(f'Failed to get path for process with pid {pid} ({_err})')
         if not winapi.CloseHandle or not winapi.CloseHandle(proc):
             self.logger.error('Failed to close process handle')
         return is_gd_dir
