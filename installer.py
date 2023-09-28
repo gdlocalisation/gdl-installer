@@ -43,7 +43,6 @@ class Installer:
             self.ui.langBox.setCurrentIndex(1)
         self.window.show()
         self.json_data = {}
-        self.load_json()
         self.exit_code = self.application.exec_()
 
     def load_locale(self, locale_str: str) -> None:
@@ -131,6 +130,7 @@ class Installer:
             self.ui.goBackButton.setEnabled(False)
             self.ui.goForwardButton.setEnabled(True)
         elif tab_id == 1:
+            self.load_json()
             self.ui.goBackButton.setEnabled(True)
             self.ui.goForwardButton.setText('Далее')
             self.check_install_dir()
@@ -183,7 +183,7 @@ class Installer:
             self.logger.log('Installing to', self.install_path)
             self.window.download_thread = loader = threader.Downloader()
             self.window.binary_data = b''
-            loader.url = 'https://github.com/gdlocalisation/gdl-binaries/releases/latest/download/gdl-binaries.bin.gzip'
+            loader.url = self.locale['binaries_url']
             loader.encoding = self.app.encoding
             loader.chunk_size = 1024 * 32 if self.app.is_compiled else 1024 * 128
             loader.progress.connect(self.download_progress)
@@ -421,7 +421,7 @@ class Installer:
 
     def load_json(self) -> None:
         self.logger.log('Downloading JSON')
-        url = 'https://github.com/gdlocalisation/gdl-binaries/releases/latest/download/gdl-binaries.json'
+        url = self.locale['json_url']
         start_time = time.time()
         try:
             resp = requests.get(url)
@@ -433,7 +433,7 @@ class Installer:
                 self.window,
                 self.locale['data'][31],
                 self.locale['data'][36],
-                lambda: sys.exit(1)
+                lambda: self.tab_changed(0)
             )
         self.json_data = resp.json()
         end_time = time.time()
