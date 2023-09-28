@@ -31,14 +31,56 @@ class Installer:
             self.set_stylesheet('Ubuntu')
         self.install_game_path = ''
         self.install_path = ''
+        self.locale = {}
+        self.locale_split = QtCore.QLocale().name().lower().strip().split('_')
+        self.logger.log('System Locale', self.locale_split)
         self.binary_data = b''
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.window)
         self.after_setup_ui()
+        if 'ru' in self.locale_split:
+            self.load_locale('ru')
+            self.ui.langBox.setCurrentIndex(1)
         self.window.show()
         self.json_data = {}
         self.load_json()
         self.exit_code = self.application.exec_()
+
+    def load_locale(self, locale_str: str) -> None:
+        f = open(os.path.join(self.app.files_dir, f'locale_{locale_str}.json'), 'r', encoding=self.app.encoding)
+        self.locale = json.loads(f.read())
+        f.close()
+        _translate = QtCore.QCoreApplication.translate
+        ld = self.locale['data']
+        self.window.setWindowTitle(ld[0])
+        self.ui.hellomainLabel.setText(ld[1])
+        self.ui.helloLabel1.setText(ld[2])
+        self.ui.helloLabel2.setText(ld[3])
+        self.ui.langLabel.setText(ld[4])
+        self.ui.tabs.setTabText(self.ui.tabs.indexOf(self.ui.helloTab), ld[5])
+        self.ui.folderLabel.setText(ld[6])
+        self.ui.folderpathButton.setText(ld[7])
+        self.ui.regappBox.setText(ld[8])
+        self.ui.tabs.setTabText(self.ui.tabs.indexOf(self.ui.folderselectTab), ld[9])
+        self.ui.defaultType.setText(ld[10])
+        self.ui.loaderType.setText(ld[11])
+        self.ui.modType.setText(ld[12])
+        self.ui.hackType.setText(ld[13])
+        self.ui.typeLabel.setText(ld[14])
+        self.ui.gdhmType.setText(ld[15])
+        self.ui.tabs.setTabText(self.ui.tabs.indexOf(self.ui.typeselectTab), ld[16])
+        self.ui.downloadLabel.setText(ld[17])
+        self.ui.unpackLabel.setText(ld[18])
+        self.ui.tabs.setTabText(self.ui.tabs.indexOf(self.ui.installTab), ld[19])
+        self.ui.ok1Label.setText(ld[20])
+        self.ui.ok2Label.setText(ld[21])
+        self.ui.githubBox.setText(ld[22])
+        self.ui.discordBox.setText(ld[23])
+        self.ui.siteBox.setText(ld[24])
+        self.ui.tabs.setTabText(self.ui.tabs.indexOf(self.ui.okTab), ld[25])
+        self.ui.cancelButton.setText(ld[26])
+        self.ui.goForwardButton.setText(ld[27])
+        self.ui.goBackButton.setText(ld[28])
 
     def after_setup_ui(self) -> None:
         self.window.setWindowFlag(QtCore.Qt.WindowType.CustomizeWindowHint, True)
@@ -64,7 +106,7 @@ class Installer:
 
     def bind_events(self) -> None:
         self.ui.cancelButton.clicked.connect(lambda: self.app.show_question(
-            self.window, 'Выход из установки', 'Вы уверены, что хотите выйти?', self.window.close
+            self.window, self.locale['data'][29], self.locale['data'][30], self.window.close
         ))
         self.ui.goForwardButton.clicked.connect(self.go_forward)
         self.ui.goBackButton.clicked.connect(self.go_back)
@@ -99,12 +141,12 @@ class Installer:
                     self.tab_changed(1)
                     self.app.show_question(
                         self.window,
-                        'Ошибка',
-                        'Тут GDL уже установлен!\nЗапустить установщик из папки с игрой?',
+                        self.locale['data'][31],
+                        self.locale['data'][32],
                         self.run_game_installer_and_exit
                     )
             self.ui.goBackButton.setEnabled(True)
-            self.ui.goForwardButton.setText('Установить')
+            self.ui.goForwardButton.setText(self.locale['data'][33])
             default_path = os.path.join(self.ui.folderpathEdit.text(), 'adaf-dll')
             self.ui.defaultType.setEnabled(not (os.path.isdir(default_path) and os.listdir(default_path)))
             self.ui.modType.setEnabled(os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), 'mods')))
@@ -150,7 +192,7 @@ class Installer:
             self.ui.goForwardButton.setEnabled(True)
             self.ui.goBackButton.setEnabled(False)
             self.ui.cancelButton.setEnabled(False)
-            self.ui.goForwardButton.setText('Готово!')
+            self.ui.goForwardButton.setText(self.locale['data'][34])
 
     def register_app(self) -> None:
         self.logger.log('Registering app')
@@ -168,7 +210,7 @@ class Installer:
         winreg.SetValueEx(key, 'DisplayIcon', 0, winreg.REG_SZ, os.path.join(self.install_game_path, 'gdl-icon.ico'))
         winreg.SetValueEx(key, 'DisplayName', 0, winreg.REG_SZ, 'Geometry Dash Localisation')
         winreg.SetValueEx(key, 'DisplayVersion', 0, winreg.REG_SZ, '1.0.0')
-        winreg.SetValueEx(key, 'URLInfoAbout', 0, winreg.REG_SZ, 'https://www.gdlocalisation.gq/')
+        winreg.SetValueEx(key, 'URLInfoAbout', 0, winreg.REG_SZ, 'https://www.gdlocalisation.uk/')
         installer_path = '"' + os.path.join(self.install_game_path, os.path.basename(self.app.exec_script)) + '"'
         if not self.app.is_compiled:
             installer_path = '"' + sys.executable + '" ' + installer_path
@@ -267,8 +309,8 @@ class Installer:
         self.logger.error('Failed to unzip assets', content)
         self.app.show_error(
             self.window,
-            'Ошибка',
-            'Не распоковать архив.\nПовторите попытку позже.',
+            self.locale['data'][31],
+            self.locale['data'][35],
             lambda: self.tab_changed(2)
         )
 
@@ -298,8 +340,8 @@ class Installer:
         self.logger.error('Failed to download bin', chunk.decode(self.app.encoding))
         self.app.show_error(
             self.window,
-            'Ошибка',
-            'Не удалось скачать архив.\nПовторите попытку позже.',
+            self.locale['data'][31],
+            self.locale['data'][36],
             lambda: self.tab_changed(2)
         )
 
@@ -310,8 +352,8 @@ class Installer:
                 if not os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), self.ui.adafpathEdit.text())):
                     self.app.show_error(
                         self.window,
-                        'Ошибка',
-                        'Не удалось найти папку: ' + self.ui.adafpathEdit.text()
+                        self.locale['data'][31],
+                        self.locale['data'][37] + self.ui.adafpathEdit.text()
                     )
                     return
         if self.ui.tabs.currentIndex() == 4:
@@ -371,7 +413,7 @@ class Installer:
 
     def select_install_dir(self) -> None:
         path = QtWidgets.QFileDialog.getExistingDirectory(
-            self.window, 'Выбор папки с игрой', self.ui.folderpathEdit.text()
+            self.window, self.locale['data'][38], self.ui.folderpathEdit.text()
         )
         self.logger.log('Selected install dir', path)
         self.ui.folderpathEdit.setText(path)
@@ -389,8 +431,8 @@ class Installer:
             self.logger.error('Failed to download JSON', err)
             return self.app.show_error(
                 self.window,
-                'Ошибка!',
-                'Не удалось скачать информацию.\nПовторите попытку позже.',
+                self.locale['data'][31],
+                self.locale['data'][36],
                 lambda: sys.exit(1)
             )
         self.json_data = resp.json()
