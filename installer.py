@@ -141,7 +141,7 @@ class Installer:
         elif tab_id == 1:
             self.load_json()
             self.ui.goBackButton.setEnabled(True)
-            self.ui.goForwardButton.setText('Далее')
+            self.ui.goForwardButton.setText(self.app.locale['data'][27])
             self.check_install_dir()
         elif tab_id == 2:
             if not self.installer_data:
