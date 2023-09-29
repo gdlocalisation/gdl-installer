@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Установка GDL</string>
+   <string>GDL Installer</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -62,7 +62,7 @@
       <bool>true</bool>
      </property>
      <attribute name="title">
-      <string>Приветствие</string>
+      <string>Welcome</string>
      </attribute>
      <widget class="QLabel" name="left_icon">
       <property name="enabled">
@@ -102,7 +102,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Вас приветствует мастер установки русификатора для Geometry Dash!</string>
+       <string>Welcome to the GDL Installer!</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -121,7 +121,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Эта программа установит GD Localisation на ваш компьютер.</string>
+       <string>This app will install GD Localisation on your computer</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -137,7 +137,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Нажмите кнопку &quot;Далее&quot; для продолжения</string>
+       <string>Press &quot;Next&quot; to continue</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -153,7 +153,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Language/Язык</string>
+       <string>Language</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -185,7 +185,7 @@
       <bool>true</bool>
      </property>
      <attribute name="title">
-      <string>Выбор Папки</string>
+      <string>Game Folder</string>
      </attribute>
      <widget class="QLabel" name="folderMainLogo">
       <property name="geometry">
@@ -216,7 +216,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Выберите расположение папки с игрой:</string>
+       <string>Select game folder:</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -242,7 +242,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Обзор</string>
+       <string>Select</string>
       </property>
      </widget>
      <widget class="QCheckBox" name="regappBox">
@@ -255,7 +255,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Добавить GDL как приложение в параметры</string>
+       <string>Register GDL as app in settings</string>
       </property>
       <property name="checked">
        <bool>true</bool>
@@ -267,7 +267,7 @@
       <bool>true</bool>
      </property>
      <attribute name="title">
-      <string>Тип установки</string>
+      <string>Installation Type</string>
      </attribute>
      <widget class="QLabel" name="typeMainLogo">
       <property name="geometry">
@@ -298,7 +298,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Стандартная установка (ProxyDllLoader)</string>
+       <string>Default (ProxyDllLoader)</string>
       </property>
       <property name="checked">
        <bool>true</bool>
@@ -314,7 +314,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Установка для GDDLLLOADER/ProxyDllLoader от Adaf:</string>
+       <string>GDDLLLOADER/ProxyDllLoader by Adaf:</string>
       </property>
       <property name="checkable">
        <bool>true</bool>
@@ -330,7 +330,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Установка для ModLdr от HJfod</string>
+       <string>ModLdr by HJfod</string>
       </property>
       <property name="checkable">
        <bool>true</bool>
@@ -346,7 +346,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Установка для MegaHackv6.2+ от Absolute</string>
+       <string>MegaHackv6.2+ by Absolute</string>
       </property>
       <property name="checkable">
        <bool>true</bool>
@@ -362,7 +362,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Выберите наилучший вариант установки для вас:</string>
+       <string>Select installation type:</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -378,7 +378,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Установка для GDHM</string>
+       <string>GDHM</string>
       </property>
       <property name="checkable">
        <bool>true</bool>
@@ -403,7 +403,7 @@
       <bool>true</bool>
      </property>
      <attribute name="title">
-      <string>Установка</string>
+      <string>Intallation</string>
      </attribute>
      <widget class="QLabel" name="installMainLogo">
       <property name="geometry">
@@ -453,7 +453,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Загрузка архива:</string>
+       <string>Download Progress:</string>
       </property>
      </widget>
      <widget class="QLabel" name="unpackLabel">
@@ -466,7 +466,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Резервные Копии и Распаковка архива:</string>
+       <string>Backups and Unpacking:</string>
       </property>
      </widget>
      <widget class="QProgressBar" name="unpackBar">
@@ -494,7 +494,7 @@
       <bool>true</bool>
      </property>
      <attribute name="title">
-      <string>Готово</string>
+      <string>Finishing</string>
      </attribute>
      <widget class="QLabel" name="okMainLogo">
       <property name="geometry">
@@ -530,7 +530,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Установка завершена успешно!</string>
+       <string>Installation is done!</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -551,7 +551,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Нажмите &quot;Готово&quot; для выхода из программы установки</string>
+       <string>Press &quot;Exit&quot; to quit</string>
       </property>
       <property name="wordWrap">
        <bool>true</bool>
@@ -572,7 +572,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Посетить наш GitHub</string>
+       <string>Visit our GitHub</string>
       </property>
       <property name="checked">
        <bool>false</bool>
@@ -596,7 +596,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Посетить наш канал в Discord</string>
+       <string>Visit our Discord channel</string>
       </property>
       <property name="checked">
        <bool>false</bool>
@@ -617,7 +617,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Посетить наш сайт</string>
+       <string>Visit our site</string>
       </property>
       <property name="checked">
        <bool>false</bool>
@@ -635,7 +635,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Отмена</string>
+     <string>Cancel</string>
     </property>
    </widget>
    <widget class="QPushButton" name="goForwardButton">
@@ -648,7 +648,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Далее</string>
+     <string>Next</string>
     </property>
    </widget>
    <widget class="QPushButton" name="goBackButton">
@@ -664,7 +664,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Назад</string>
+     <string>Back</string>
     </property>
    </widget>
   </widget>

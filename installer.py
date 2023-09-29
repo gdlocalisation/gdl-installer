@@ -39,15 +39,21 @@ class Installer:
         self.ui.setupUi(self.window)
         self.after_setup_ui()
         if 'ru' in self.locale_split:
-            self.locale_str = 'ru'
             self.ui.langBox.setCurrentIndex(1)
         else:
-            self.locale_str = 'ru'  # TODO
             self.ui.langBox.setCurrentIndex(0)
-        self.load_locale(self.locale_str)
+            self.locale_str = 'en'
+            self.load_locale('en')
         self.window.show()
         self.json_data = {}
         self.exit_code = self.application.exec_()
+
+    def check_lang(self, current_index: int) -> None:
+        if current_index == 0:
+            self.locale_str = 'en'
+        elif current_index == 1:
+            self.locale_str = 'ru'
+        self.load_locale(self.locale_str or 'en')
 
     def load_locale(self, locale_str: str) -> None:
         self.app.locale = json.loads(self.app.read_text(os.path.join(self.app.files_dir, f'locale_{locale_str}.json')))
@@ -115,6 +121,7 @@ class Installer:
         self.ui.folderpathEdit.textChanged.connect(self.check_install_dir)
         self.ui.adafpathEdit.textChanged.connect(self.check_radio_buttons)
         self.ui.loaderType.changeEvent = self.check_radio_buttons
+        self.ui.langBox.currentIndexChanged.connect(self.check_lang)
         self.logger.log('Events bound')
 
     def run_game_installer_and_exit(self) -> None:
