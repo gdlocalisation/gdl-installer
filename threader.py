@@ -7,7 +7,7 @@ from PyQt5 import QtCore
 class Downloader(QtCore.QThread):
     url = ''
     encoding = 'utf-8'
-    chunk_size = 1024
+    chunk_size = 4096
     progress = QtCore.pyqtSignal(int, bytes)
 
     def run(self) -> None:
