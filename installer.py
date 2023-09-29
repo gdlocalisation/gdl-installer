@@ -46,9 +46,7 @@ class Installer:
         self.exit_code = self.application.exec_()
 
     def load_locale(self, locale_str: str) -> None:
-        f = open(os.path.join(self.app.files_dir, f'locale_{locale_str}.json'), 'r', encoding=self.app.encoding)
-        self.locale = json.loads(f.read())
-        f.close()
+        self.locale = json.loads(self.app.read_text(os.path.join(self.app.files_dir, f'locale_{locale_str}.json')))
         _translate = QtCore.QCoreApplication.translate
         ld = self.locale['data']
         self.window.setWindowTitle(ld[0])
@@ -259,9 +257,7 @@ class Installer:
             'game_path': self.install_game_path,
             'json_data': self.json_data
         }
-        f = open(os.path.join(self.install_game_path, 'gdl-installer.json'), 'w', encoding=self.app.encoding)
-        f.write(json.dumps(json_result))
-        f.close()
+        self.app.write_text(os.path.join(self.install_game_path, 'gdl-installer.json'), json.dumps(json_result))
         self.logger.log('Installer json wrote')
         if self.ui.regappBox.isChecked():
             self.register_app()
@@ -441,7 +437,4 @@ class Installer:
 
     def set_stylesheet(self, style_name: str) -> None:
         self.logger.log('Setting stylesheet', style_name)
-        f = open(os.path.join(self.app.files_dir, style_name + '.qss'), 'r', encoding=self.app.encoding)
-        content = f.read()
-        f.close()
-        self.window.setStyleSheet(content)
+        self.window.setStyleSheet(self.app.read_text(os.path.join(self.app.files_dir, style_name + '.qss')))

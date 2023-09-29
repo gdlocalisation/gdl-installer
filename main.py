@@ -72,14 +72,28 @@ class App:
         )
 
     def read_binary(self, fn: str) -> bytes:
-        self.logger.log('Reading file', fn)
+        self.logger.log('Reading binary file', fn)
         f = open(fn, 'rb')
         result = f.read()
         f.close()
         return result
 
+    def read_text(self, fn: str) -> str:
+        self.logger.log('Reading text file', fn)
+        f = open(fn, 'r', encoding=self.encoding)
+        result = f.read()
+        f.close()
+        return result
+
+    def write_text(self, fn: str, content: str) -> int:
+        self.logger.log('Writing text file', fn)
+        f = open(fn, 'w', encoding=self.encoding)
+        result = f.write(content)
+        f.close()
+        return result
+
     def write_binary(self, fn: str, content: bytes) -> int:
-        self.logger.log('Writing file', fn)
+        self.logger.log('Writing binary file', fn)
         f = open(fn, 'wb')
         result = f.write(content)
         f.close()
