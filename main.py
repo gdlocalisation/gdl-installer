@@ -158,9 +158,7 @@ class App:
         self.logger.log('Settings path', settings_path)
         if not os.path.isfile(settings_path):
             return self.run_installer()
-        f = open(settings_path, 'r', encoding=self.encoding)
-        json_data = json.loads(f.read())
-        f.close()
+        json_data = json.loads(self.read_text(settings_path))
         if sys.argv[-1] == '--modify':
             return self.run_installer(json_data)
         if sys.argv[-1] == '--remove':

@@ -32,15 +32,20 @@ class Installer:
         self.install_game_path = ''
         self.install_path = ''
         self.locale = {}
-        self.locale_split = QtCore.QLocale().name().lower().strip().split('_')
+        self.locale_str = self.installer_data.get('locale')
+        self.locale_split = [self.locale_str] if self.locale_str else QtCore.QLocale().name().lower().strip().split('_')
         self.logger.log('System Locale', self.locale_split)
         self.binary_data = b''
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.window)
         self.after_setup_ui()
         if 'ru' in self.locale_split:
-            self.load_locale('ru')
+            self.locale_str = 'ru'
             self.ui.langBox.setCurrentIndex(1)
+        else:
+            self.locale_str = 'ru'  # TODO
+            self.ui.langBox.setCurrentIndex(0)
+        self.load_locale(self.locale_str)
         self.window.show()
         self.json_data = {}
         self.exit_code = self.application.exec_()
@@ -251,6 +256,7 @@ class Installer:
             is_default = self.ui.defaultType.isChecked()
             is_registered = self.ui.regappBox.isChecked()
         json_result = {
+            'locale': self.locale_str,
             'is_default': is_default,
             'is_registered': is_registered,
             'dll_path': self.install_path,
