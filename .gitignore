@@ -7,6 +7,5 @@ dist
 main.spec
 *.bin.gz
 *.bin
-*.json
 *_ui.py
 *.exe
