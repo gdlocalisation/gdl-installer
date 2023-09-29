@@ -23,6 +23,7 @@ class App:
         self.spawn_args = [sys.executable] if self.is_compiled else [sys.executable, __file__]
         self.spawn_str = '"' + '"'.join(self.spawn_args) + '"'
         self.exec_script = self.spawn_args[-1]
+        self.locale = {}
         self.is_dark = False
         self.reg_path = 'Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\GDLocalisation'
         self.logger = logger.Logger(self)
@@ -112,7 +113,7 @@ class App:
         box.setIcon(box.Icon.Critical)
         box.setWindowTitle(caption)
         box.setText(text)
-        box.addButton('  OK  ', box.ActionRole).clicked.connect(cb or box.hide)  # noqa
+        box.addButton(self.locale['data'][44], box.ActionRole).clicked.connect(cb or box.hide)  # noqa
         box.show()
         return box
 
@@ -126,8 +127,8 @@ class App:
         box.setIcon(box.Icon.Question)
         box.setWindowTitle(caption)
         box.setText(text)
-        box.addButton('  Да  ', box.ActionRole).clicked.connect(yes_cb)  # noqa
-        box.addButton('  Нет ', box.ActionRole).clicked.connect(no_cb or box.hide)  # noqa
+        box.addButton(self.locale['data'][45], box.ActionRole).clicked.connect(yes_cb)  # noqa
+        box.addButton(self.locale['data'][46], box.ActionRole).clicked.connect(no_cb or box.hide)  # noqa
         box.show()
         return box
 
@@ -159,6 +160,7 @@ class App:
         if not os.path.isfile(settings_path):
             return self.run_installer()
         json_data = json.loads(self.read_text(settings_path))
+        self.locale = json.loads(self.read_text(os.path.join(self.files_dir, f'locale_{json_data["locale"]}.json')))
         if sys.argv[-1] == '--modify':
             return self.run_installer(json_data)
         if sys.argv[-1] == '--remove':
@@ -166,8 +168,8 @@ class App:
         self.logger.log('Showing msg about install')
         msg_result = winapi.MessageBoxW(
             0,
-            'Да - Обновить GDL.\nНет - Удалить GDL.\nОтмена - Выйти.',
-            'Изменение GDL',
+            self.locale['data'][42],
+            self.locale['data'][43],
             0x00000003 | 0x00000020
         )
         if msg_result == 6:

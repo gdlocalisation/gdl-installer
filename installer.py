@@ -31,7 +31,6 @@ class Installer:
             self.set_stylesheet('Ubuntu')
         self.install_game_path = ''
         self.install_path = ''
-        self.locale = {}
         self.locale_str = self.installer_data.get('locale')
         self.locale_split = [self.locale_str] if self.locale_str else QtCore.QLocale().name().lower().strip().split('_')
         self.logger.log('System Locale', self.locale_split)
@@ -51,9 +50,9 @@ class Installer:
         self.exit_code = self.application.exec_()
 
     def load_locale(self, locale_str: str) -> None:
-        self.locale = json.loads(self.app.read_text(os.path.join(self.app.files_dir, f'locale_{locale_str}.json')))
+        self.app.locale = json.loads(self.app.read_text(os.path.join(self.app.files_dir, f'locale_{locale_str}.json')))
         _translate = QtCore.QCoreApplication.translate
-        ld = self.locale['data']
+        ld = self.app.locale['data']
         self.window.setWindowTitle(ld[0])
         self.ui.hellomainLabel.setText(ld[1])
         self.ui.helloLabel1.setText(ld[2])
@@ -108,7 +107,7 @@ class Installer:
 
     def bind_events(self) -> None:
         self.ui.cancelButton.clicked.connect(lambda: self.app.show_question(
-            self.window, self.locale['data'][29], self.locale['data'][30], self.window.close
+            self.window, self.app.locale['data'][29], self.app.locale['data'][30], self.window.close
         ))
         self.ui.goForwardButton.clicked.connect(self.go_forward)
         self.ui.goBackButton.clicked.connect(self.go_back)
@@ -144,12 +143,12 @@ class Installer:
                     self.tab_changed(1)
                     self.app.show_question(
                         self.window,
-                        self.locale['data'][31],
-                        self.locale['data'][32],
+                        self.app.locale['data'][31],
+                        self.app.locale['data'][32],
                         self.run_game_installer_and_exit
                     )
             self.ui.goBackButton.setEnabled(True)
-            self.ui.goForwardButton.setText(self.locale['data'][33])
+            self.ui.goForwardButton.setText(self.app.locale['data'][33])
             default_path = os.path.join(self.ui.folderpathEdit.text(), 'adaf-dll')
             self.ui.defaultType.setEnabled(not (os.path.isdir(default_path) and os.listdir(default_path)))
             self.ui.modType.setEnabled(os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), 'mods')))
@@ -186,7 +185,7 @@ class Installer:
             self.logger.log('Installing to', self.install_path)
             self.window.download_thread = loader = threader.Downloader()
             self.window.binary_data = b''
-            loader.url = self.locale['binaries_url']
+            loader.url = self.app.locale['binaries_url']
             loader.encoding = self.app.encoding
             loader.chunk_size = 1024 * 32 if self.app.is_compiled else 1024 * 128
             loader.progress.connect(self.download_progress)
@@ -195,7 +194,7 @@ class Installer:
             self.ui.goForwardButton.setEnabled(True)
             self.ui.goBackButton.setEnabled(False)
             self.ui.cancelButton.setEnabled(False)
-            self.ui.goForwardButton.setText(self.locale['data'][34])
+            self.ui.goForwardButton.setText(self.app.locale['data'][34])
 
     def register_app(self) -> None:
         self.logger.log('Registering app')
@@ -311,8 +310,8 @@ class Installer:
         self.logger.error('Failed to unzip assets', content)
         self.app.show_error(
             self.window,
-            self.locale['data'][31],
-            self.locale['data'][35],
+            self.app.locale['data'][31],
+            self.app.locale['data'][35],
             lambda: self.tab_changed(2)
         )
 
@@ -342,8 +341,8 @@ class Installer:
         self.logger.error('Failed to download bin', chunk.decode(self.app.encoding))
         self.app.show_error(
             self.window,
-            self.locale['data'][31],
-            self.locale['data'][36],
+            self.app.locale['data'][31],
+            self.app.locale['data'][36],
             lambda: self.tab_changed(2)
         )
 
@@ -354,8 +353,8 @@ class Installer:
                 if not os.path.isdir(os.path.join(self.ui.folderpathEdit.text(), self.ui.adafpathEdit.text())):
                     self.app.show_error(
                         self.window,
-                        self.locale['data'][31],
-                        self.locale['data'][37] + self.ui.adafpathEdit.text()
+                        self.app.locale['data'][31],
+                        self.app.locale['data'][37] + self.ui.adafpathEdit.text()
                     )
                     return
         if self.ui.tabs.currentIndex() == 4:
@@ -415,7 +414,7 @@ class Installer:
 
     def select_install_dir(self) -> None:
         path = QtWidgets.QFileDialog.getExistingDirectory(
-            self.window, self.locale['data'][38], self.ui.folderpathEdit.text()
+            self.window, self.app.locale['data'][38], self.ui.folderpathEdit.text()
         )
         self.logger.log('Selected install dir', path)
         self.ui.folderpathEdit.setText(path)
@@ -423,7 +422,7 @@ class Installer:
 
     def load_json(self) -> None:
         self.logger.log('Downloading JSON')
-        url = self.locale['json_url']
+        url = self.app.locale['json_url']
         start_time = time.time()
         try:
             resp = requests.get(url)
@@ -433,8 +432,8 @@ class Installer:
             self.logger.error('Failed to download JSON', err)
             return self.app.show_error(
                 self.window,
-                self.locale['data'][31],
-                self.locale['data'][36],
+                self.app.locale['data'][31],
+                self.app.locale['data'][36],
                 lambda: self.tab_changed(0)
             )
         self.json_data = resp.json()
