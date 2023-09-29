@@ -10,9 +10,6 @@ class Uninstaller:
     def __init__(self, app: any, json_data: dict):
         self.app = app
         self.json_data = json_data
-        self.locale = json.loads(
-            self.app.read_text(os.path.join(self.app.files_dir, f'locale_{self.json_data["locale"]}.json'))
-        )
         self.logger = self.app.logger
         self.exit_code = 0
         if not self.ask_processing():
@@ -70,8 +67,8 @@ class Uninstaller:
         self.logger.log('Uninstallation done!')
         winapi.MessageBoxW(
             0,
-            self.locale['data'][39],
-            self.locale['data'][40],
+            self.app.locale['data'][39],
+            self.app.locale['data'][40],
             0x00000040
         )
         self.delete_installer()
@@ -85,8 +82,8 @@ class Uninstaller:
         self.logger.log('Asking about uninstall')
         msg_result = winapi.MessageBoxW(
             0,
-            self.locale['data'][41],
-            self.locale['data'][40],
+            self.app.locale['data'][41],
+            self.app.locale['data'][40],
             0x00000004 | 0x00000020 | 0x00000100
         )
         self.logger.log('User selected', msg_result)
