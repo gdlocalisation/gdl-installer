@@ -101,9 +101,7 @@ class SteamFinder:
         return value.strip()
 
     def parse_folders(self, fp: str) -> str:
-        f = open(fp, 'r', encoding='utf-8')
-        lines = [x.strip() for x in f.read().split('\n')]
-        f.close()
+        lines = [x.strip() for x in self.app.read_text(fp).split('\n')]
         brackets_level = 0
         last_path = ''
         is_apps = False
