@@ -1,6 +1,5 @@
 {
   "json_url": "https://github.com/gdlocalisation/gdl-binaries/releases/latest/download/gdl-binaries.json",
-  "binaries_url": "https://github.com/gdlocalisation/gdl-binaries/releases/latest/download/gdl-binaries.bin.gzip",
   "data": [
     "Установка GDL",
     "Вас приветствует мастер установки русификатора для Geometry Dash!",

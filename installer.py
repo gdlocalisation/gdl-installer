@@ -192,7 +192,7 @@ class Installer:
             self.logger.log('Installing to', self.install_path)
             self.window.download_thread = loader = threader.Downloader()
             self.window.binary_data = b''
-            loader.url = self.app.locale['binaries_url']
+            loader.url = self.json_data['binaries-url']
             loader.encoding = self.app.encoding
             loader.chunk_size = 1024 * 32 if self.app.is_compiled else 1024 * 128
             loader.progress.connect(self.download_progress)
@@ -219,7 +219,7 @@ class Installer:
         winreg.SetValueEx(key, 'DisplayIcon', 0, winreg.REG_SZ, os.path.join(self.install_game_path, 'gdl-icon.ico'))
         winreg.SetValueEx(key, 'DisplayName', 0, winreg.REG_SZ, 'Geometry Dash Localisation')
         winreg.SetValueEx(key, 'DisplayVersion', 0, winreg.REG_SZ, '1.0.0')
-        winreg.SetValueEx(key, 'URLInfoAbout', 0, winreg.REG_SZ, 'https://www.gdlocalisation.uk/')
+        winreg.SetValueEx(key, 'URLInfoAbout', 0, winreg.REG_SZ, self.json_data['settings-url'])
         installer_path = '"' + os.path.join(self.install_game_path, os.path.basename(self.app.exec_script)) + '"'
         if not self.app.is_compiled:
             installer_path = '"' + sys.executable + '" ' + installer_path
@@ -369,7 +369,7 @@ class Installer:
                 winapi.ShellExecuteW(
                     self.hwnd,
                     None,
-                    'https://www.gdlocalisation.uk/',
+                    self.json_data['site-url'],
                     None,
                     None,
                     0x05
@@ -378,7 +378,7 @@ class Installer:
                 winapi.ShellExecuteW(
                     self.hwnd,
                     None,
-                    'https://github.com/gdlocalisation',
+                    self.json_data['github-url'],
                     None,
                     None,
                     0x05
@@ -387,7 +387,7 @@ class Installer:
                 winapi.ShellExecuteW(
                     self.hwnd,
                     None,
-                    'https://discord.gg/CScsGU3N6M',
+                    self.json_data['settings-url'],
                     None,
                     None,
                     0x05
