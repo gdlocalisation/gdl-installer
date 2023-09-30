@@ -84,7 +84,7 @@ class SteamFinder:
         library_dir = self.parse_folders(config_path)
         game_dir = os.path.join(library_dir, 'steamapps', 'common', 'Geometry Dash')
         if not os.path.isdir(game_dir):
-            self.logger.log('GD dir is not exists')
+            self.logger.log('GD dir does not exist')
             return 1
         self.game_dir = game_dir
 
