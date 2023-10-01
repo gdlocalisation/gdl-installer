@@ -90,7 +90,7 @@ try:
     MessageBoxW.restype = ctypes.c_int
 except (FileNotFoundError, AttributeError):
     user32 = None
-    ShellExecuteW = None
+    MessageBoxW = None
 
 try:
     shell32 = ctypes.windll.shell32
