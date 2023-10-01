@@ -87,6 +87,7 @@ class SteamFinder:
             self.logger.log('GD dir does not exist')
             return 1
         self.game_dir = game_dir
+        return 0
 
     def search_steam(self, reg_path: str) -> str:  # noqa
         try:
